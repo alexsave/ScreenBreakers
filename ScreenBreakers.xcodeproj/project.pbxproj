@@ -1,0 +1,563 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		FA4B88FC2D1E1B1A007A5B6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA4B88E12D1E1B19007A5B6E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FA4B88E82D1E1B19007A5B6E;
+			remoteInfo = ScreenBreakers;
+		};
+		FA4B89062D1E1B1A007A5B6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA4B88E12D1E1B19007A5B6E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FA4B88E82D1E1B19007A5B6E;
+			remoteInfo = ScreenBreakers;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		FA4B88E92D1E1B19007A5B6E /* ScreenBreakers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenBreakers.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA4B88FB2D1E1B1A007A5B6E /* ScreenBreakersTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScreenBreakersTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA4B89052D1E1B1A007A5B6E /* ScreenBreakersUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScreenBreakersUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		FA4B88EB2D1E1B19007A5B6E /* ScreenBreakers */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ScreenBreakers;
+			sourceTree = "<group>";
+		};
+		FA4B88FE2D1E1B1A007A5B6E /* ScreenBreakersTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ScreenBreakersTests;
+			sourceTree = "<group>";
+		};
+		FA4B89082D1E1B1A007A5B6E /* ScreenBreakersUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ScreenBreakersUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FA4B88E62D1E1B19007A5B6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA4B88F82D1E1B1A007A5B6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA4B89022D1E1B1A007A5B6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FA4B88E02D1E1B19007A5B6E = {
+			isa = PBXGroup;
+			children = (
+				FA4B88EB2D1E1B19007A5B6E /* ScreenBreakers */,
+				FA4B88FE2D1E1B1A007A5B6E /* ScreenBreakersTests */,
+				FA4B89082D1E1B1A007A5B6E /* ScreenBreakersUITests */,
+				FA4B88EA2D1E1B19007A5B6E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FA4B88EA2D1E1B19007A5B6E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA4B88E92D1E1B19007A5B6E /* ScreenBreakers.app */,
+				FA4B88FB2D1E1B1A007A5B6E /* ScreenBreakersTests.xctest */,
+				FA4B89052D1E1B1A007A5B6E /* ScreenBreakersUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FA4B88E82D1E1B19007A5B6E /* ScreenBreakers */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA4B890F2D1E1B1A007A5B6E /* Build configuration list for PBXNativeTarget "ScreenBreakers" */;
+			buildPhases = (
+				FA4B88E52D1E1B19007A5B6E /* Sources */,
+				FA4B88E62D1E1B19007A5B6E /* Frameworks */,
+				FA4B88E72D1E1B19007A5B6E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				FA4B88EB2D1E1B19007A5B6E /* ScreenBreakers */,
+			);
+			name = ScreenBreakers;
+			packageProductDependencies = (
+			);
+			productName = ScreenBreakers;
+			productReference = FA4B88E92D1E1B19007A5B6E /* ScreenBreakers.app */;
+			productType = "com.apple.product-type.application";
+		};
+		FA4B88FA2D1E1B1A007A5B6E /* ScreenBreakersTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA4B89122D1E1B1A007A5B6E /* Build configuration list for PBXNativeTarget "ScreenBreakersTests" */;
+			buildPhases = (
+				FA4B88F72D1E1B1A007A5B6E /* Sources */,
+				FA4B88F82D1E1B1A007A5B6E /* Frameworks */,
+				FA4B88F92D1E1B1A007A5B6E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FA4B88FD2D1E1B1A007A5B6E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FA4B88FE2D1E1B1A007A5B6E /* ScreenBreakersTests */,
+			);
+			name = ScreenBreakersTests;
+			packageProductDependencies = (
+			);
+			productName = ScreenBreakersTests;
+			productReference = FA4B88FB2D1E1B1A007A5B6E /* ScreenBreakersTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		FA4B89042D1E1B1A007A5B6E /* ScreenBreakersUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA4B89152D1E1B1A007A5B6E /* Build configuration list for PBXNativeTarget "ScreenBreakersUITests" */;
+			buildPhases = (
+				FA4B89012D1E1B1A007A5B6E /* Sources */,
+				FA4B89022D1E1B1A007A5B6E /* Frameworks */,
+				FA4B89032D1E1B1A007A5B6E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FA4B89072D1E1B1A007A5B6E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FA4B89082D1E1B1A007A5B6E /* ScreenBreakersUITests */,
+			);
+			name = ScreenBreakersUITests;
+			packageProductDependencies = (
+			);
+			productName = ScreenBreakersUITests;
+			productReference = FA4B89052D1E1B1A007A5B6E /* ScreenBreakersUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FA4B88E12D1E1B19007A5B6E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					FA4B88E82D1E1B19007A5B6E = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					FA4B88FA2D1E1B1A007A5B6E = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = FA4B88E82D1E1B19007A5B6E;
+					};
+					FA4B89042D1E1B1A007A5B6E = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = FA4B88E82D1E1B19007A5B6E;
+					};
+				};
+			};
+			buildConfigurationList = FA4B88E42D1E1B19007A5B6E /* Build configuration list for PBXProject "ScreenBreakers" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = FA4B88E02D1E1B19007A5B6E;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = FA4B88EA2D1E1B19007A5B6E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FA4B88E82D1E1B19007A5B6E /* ScreenBreakers */,
+				FA4B88FA2D1E1B1A007A5B6E /* ScreenBreakersTests */,
+				FA4B89042D1E1B1A007A5B6E /* ScreenBreakersUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FA4B88E72D1E1B19007A5B6E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA4B88F92D1E1B1A007A5B6E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA4B89032D1E1B1A007A5B6E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FA4B88E52D1E1B19007A5B6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA4B88F72D1E1B1A007A5B6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA4B89012D1E1B1A007A5B6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FA4B88FD2D1E1B1A007A5B6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FA4B88E82D1E1B19007A5B6E /* ScreenBreakers */;
+			targetProxy = FA4B88FC2D1E1B1A007A5B6E /* PBXContainerItemProxy */;
+		};
+		FA4B89072D1E1B1A007A5B6E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FA4B88E82D1E1B19007A5B6E /* ScreenBreakers */;
+			targetProxy = FA4B89062D1E1B1A007A5B6E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		FA4B890D2D1E1B1A007A5B6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		FA4B890E2D1E1B1A007A5B6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FA4B89102D1E1B1A007A5B6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"ScreenBreakers/Preview Content\"";
+				DEVELOPMENT_TEAM = 8N2Z544SB4;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexs.ScreenBreakers;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FA4B89112D1E1B1A007A5B6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"ScreenBreakers/Preview Content\"";
+				DEVELOPMENT_TEAM = 8N2Z544SB4;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexs.ScreenBreakers;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		FA4B89132D1E1B1A007A5B6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8N2Z544SB4;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexs.ScreenBreakersTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ScreenBreakers.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ScreenBreakers";
+			};
+			name = Debug;
+		};
+		FA4B89142D1E1B1A007A5B6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8N2Z544SB4;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexs.ScreenBreakersTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ScreenBreakers.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ScreenBreakers";
+			};
+			name = Release;
+		};
+		FA4B89162D1E1B1A007A5B6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8N2Z544SB4;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexs.ScreenBreakersUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ScreenBreakers;
+			};
+			name = Debug;
+		};
+		FA4B89172D1E1B1A007A5B6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8N2Z544SB4;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexs.ScreenBreakersUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ScreenBreakers;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FA4B88E42D1E1B19007A5B6E /* Build configuration list for PBXProject "ScreenBreakers" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA4B890D2D1E1B1A007A5B6E /* Debug */,
+				FA4B890E2D1E1B1A007A5B6E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA4B890F2D1E1B1A007A5B6E /* Build configuration list for PBXNativeTarget "ScreenBreakers" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA4B89102D1E1B1A007A5B6E /* Debug */,
+				FA4B89112D1E1B1A007A5B6E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA4B89122D1E1B1A007A5B6E /* Build configuration list for PBXNativeTarget "ScreenBreakersTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA4B89132D1E1B1A007A5B6E /* Debug */,
+				FA4B89142D1E1B1A007A5B6E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA4B89152D1E1B1A007A5B6E /* Build configuration list for PBXNativeTarget "ScreenBreakersUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA4B89162D1E1B1A007A5B6E /* Debug */,
+				FA4B89172D1E1B1A007A5B6E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FA4B88E12D1E1B19007A5B6E /* Project object */;
+}
