@@ -14,21 +14,41 @@ struct SharedContainer {
     
     private static var container: ModelContainer?
     
-    static func makeConfiguration() -> ModelContainer? {
+    static func makeConfiguration() -> ModelContainer {
+        
+        /*let groupIdentifier = "group.com.alexs.ScreenBreakers"
+        let fileManager = FileManager.default
+        let storeURL = fileManager.containerURL(forSecurityApplicationGroupIdentifier: groupIdentifier)?
+            .appendingPathComponent("Library/Application Support/default.store")
+        
+        // Remove the existing store if it exists
+        if let storeURL = storeURL, fileManager.fileExists(atPath: storeURL.path) {
+            do {
+                try fileManager.removeItem(at: storeURL)
+                print("Successfully wiped existing database at \(storeURL.path)")
+            } catch {
+                fatalError("Failed to remove existing database: \(error)")
+            }
+        }*/
+        
         let configuration = ModelConfiguration(
             isStoredInMemoryOnly: false,
             allowsSave: true,
             groupContainer: .identifier("group.com.alexs.ScreenBreakers")
         )
         do {
+            // Attempt to create and return the ModelContainer
             let container = try ModelContainer(
                 for: DailyActivity.self,
                 configurations: configuration
             )
             return container
-        } catch {}
-        return nil
+        } catch {
+            // Handle the error appropriately
+            fatalError("Failed to create ModelContainer: \(error)")
+        }
     }
+    
     
     @MainActor
     static func getContext() throws -> ModelContext {

@@ -43,8 +43,8 @@ struct ContentView: View {
             List(dailyActivities) { dailyActivity in
                 VStack(alignment: .leading) {
                     Text("Date: \(dailyActivity.date)")
-                    Text("Total Minutes of Activity: \(dailyActivity.totalMinutesOfActivity)")
-                    Text("Total Active Time: \(dailyActivity.totalActiveTime)")
+                    Text("Total Minutes of Activity: \(dailyActivity.totalScreenMinutes)")
+                    Text("Total Active Time: \(dailyActivity.totalMonitoringMinutes)")
                 }
             }
             Text("1-Minute Threshold Demo")

@@ -10,39 +10,6 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
     private let activityName = DeviceActivityName("group.com.alexs.ScreenBreakers.oneMinuteActivity")
     private let eventName = DeviceActivityEvent.Name("group.com.alexs.ScreenBreakers.oneMinuteThresholdEvent")
     
-    // Shared SwiftData model container
-    private lazy var modelContext: ModelContext? = {
-        do {
-            let container = try SharedContainer.makeConfiguration()!
-            return container.mainContext
-        } catch {
-        }
-        return nil
-        /*do{
-         
-         guard let appGroupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.alexs.ScreenBreakers") else {
-         os_log("Unable to find App Group container.")
-         return nil
-         }
-         let url = appGroupURL.appendingPathComponent("SharedDatabase.sqlite")
-         
-         let container = try ModelContainer(for: Schema([DailyActivity.self]), configurations: [
-         ModelConfiguration(url: url)
-         ])
-         let context = container.mainContext
-         return context
-         }catch{}
-         
-         return nil*/
-        
-        /*do {
-         return try getSharedContainer().mainContext
-         } catch {
-         os_log("Failed to initialize SwiftData model context: \(error)")
-         fatalError("Failed to initialize SwiftData model context: \(error)")
-         }*/
-    }()
-    
     override func eventDidReachThreshold(_ event: DeviceActivityEvent.Name, activity: DeviceActivityName) {
         super.eventDidReachThreshold(event, activity: activity)
         
@@ -65,7 +32,7 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
             do {
                 let today = Calendar.current.startOfDay(for: Date())
                 let fetchDescriptor = FetchDescriptor<DailyActivity>(
-                    predicate: #Predicate { $0.date == $0.date }
+                    predicate: #Predicate { $0.date == today }
                 )
                 
                 let container = try SharedContainer.makeConfiguration()
@@ -74,14 +41,15 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
                     os_log("model context is nil")
                     return
                 }
-                let context = container!.mainContext
+                let context = container.mainContext
                 
                 let existingData = try context.fetch(fetchDescriptor).first
                 if let data = existingData {
-                    data.totalMinutesOfActivity += 1
-                    os_log("Updated accumulated usage to: %d minutes", data.totalMinutesOfActivity)
+                    data.totalScreenMinutes += 1
+                    os_log("Updated accumulated usage to: %d minutes", data.totalScreenMinutes)
                 } else {
-                    let newData = DailyActivity(date: today, totalMinutesOfActivity: 1)
+                    // must be new
+                    let newData = DailyActivity(date: today, totalScreenMinutes: 1, totalMonitoringMinutes: 0)
                     context.insert(newData)
                     os_log("Created new activity record with 1 minute.")
                 }

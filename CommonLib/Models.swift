@@ -9,31 +9,17 @@ import SwiftData
 import Foundation
 
 @Model
-class AppActivity {
-    @Attribute(.unique) var id: UUID = UUID()
-    var launchTime: Date
-    var closeTime: Date?
-    var minutesOfActivity: Double = 0
-    
-    init(launchTime: Date, closeTime: Date? = nil, minutesOfActivity: Double = 0) {
-        self.launchTime = launchTime
-        self.closeTime = closeTime
-        self.minutesOfActivity = minutesOfActivity
-    }
-}
-
-@Model
 class DailyActivity {
-    @Attribute(.unique) var id: UUID = UUID()
-    var date: Date
-    var totalMinutesOfActivity: Double
+    @Attribute(.unique) var date: Date
+    //var id: UUID = UUID()
+    var totalScreenMinutes: Double
     // This app open and recording
-    var totalActiveTime: Double?
+    var totalMonitoringMinutes: Double
 
-    init(date: Date, totalMinutesOfActivity: Double, totalActiveTime: Double? = 0) {
+    init(date: Date, totalScreenMinutes: Double, totalMonitoringMinutes: Double) {
         self.date = date
-        self.totalMinutesOfActivity = totalMinutesOfActivity
-        self.totalActiveTime = totalActiveTime
+        self.totalScreenMinutes = totalScreenMinutes
+        self.totalMonitoringMinutes = totalMonitoringMinutes
     }
 }
 
