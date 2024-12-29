@@ -15,9 +15,9 @@ struct SharedContainer {
     private static var container: ModelContainer?
     
     static func makeConfiguration() -> ModelContainer {
-        
-        /*let groupIdentifier = "group.com.alexs.ScreenBreakers"
-        let fileManager = FileManager.default
+        let groupIdentifier = "group.com.alexs.ScreenBreakers"
+
+        /*let fileManager = FileManager.default
         let storeURL = fileManager.containerURL(forSecurityApplicationGroupIdentifier: groupIdentifier)?
             .appendingPathComponent("Library/Application Support/default.store")
         
@@ -34,7 +34,7 @@ struct SharedContainer {
         let configuration = ModelConfiguration(
             isStoredInMemoryOnly: false,
             allowsSave: true,
-            groupContainer: .identifier("group.com.alexs.ScreenBreakers")
+            groupContainer: .identifier(groupIdentifier)
         )
         do {
             // Attempt to create and return the ModelContainer

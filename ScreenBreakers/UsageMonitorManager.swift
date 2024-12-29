@@ -12,7 +12,6 @@ class UsageMonitorManager {
 
     @MainActor func appLaunched() {
         lastSavedAt = Date()
-        print("App launched at \(Date())")
         // Perform operations for app launch
         let today = Calendar.current.startOfDay(for: Date())
         let lastDailyActivity = try? container.mainContext.fetch(FetchDescriptor<DailyActivity>(
@@ -28,7 +27,6 @@ class UsageMonitorManager {
 
     @MainActor func appClosed() {
         let now = Date()
-        print("App closed at \(now)")
         guard let lastSavedAt = lastSavedAt else { return }
         let today = Calendar.current.startOfDay(for: now)
         let lastDailyActivity = try? container.mainContext.fetch(FetchDescriptor<DailyActivity>(
