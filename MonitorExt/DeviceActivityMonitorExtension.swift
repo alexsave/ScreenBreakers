@@ -1,67 +1,131 @@
 import DeviceActivity
+import SwiftData
 import Foundation
 import os.log
 
+@MainActor
 class DeviceActivityMonitorExtension: DeviceActivityMonitor {
     
     private let center = DeviceActivityCenter()
     private let activityName = DeviceActivityName("group.com.alexs.ScreenBreakers.oneMinuteActivity")
     private let eventName = DeviceActivityEvent.Name("group.com.alexs.ScreenBreakers.oneMinuteThresholdEvent")
-
-    // Access the shared defaults in the extension
-    private let sharedDefaults = UserDefaults(suiteName: "group.com.alexs.ScreenBreakers")
-
+    
+    // Shared SwiftData model container
+    private lazy var modelContext: ModelContext? = {
+        do {
+            let container = try SharedContainer.makeConfiguration()!
+            return container.mainContext
+        } catch {
+        }
+        return nil
+        /*do{
+         
+         guard let appGroupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.alexs.ScreenBreakers") else {
+         os_log("Unable to find App Group container.")
+         return nil
+         }
+         let url = appGroupURL.appendingPathComponent("SharedDatabase.sqlite")
+         
+         let container = try ModelContainer(for: Schema([DailyActivity.self]), configurations: [
+         ModelConfiguration(url: url)
+         ])
+         let context = container.mainContext
+         return context
+         }catch{}
+         
+         return nil*/
+        
+        /*do {
+         return try getSharedContainer().mainContext
+         } catch {
+         os_log("Failed to initialize SwiftData model context: \(error)")
+         fatalError("Failed to initialize SwiftData model context: \(error)")
+         }*/
+    }()
+    
     override func eventDidReachThreshold(_ event: DeviceActivityEvent.Name, activity: DeviceActivityName) {
         super.eventDidReachThreshold(event, activity: activity)
         
-        guard event == eventName, activity == activityName else { return }
+        guard event == eventName, activity == activityName else {
+            os_log("Event or activity mismatch. Ignoring.")
+            return
+        }
         
-        // 1) Increment the "accumulated usage" by 1 minute
-        let current = sharedDefaults?.integer(forKey: "accumulatedUsageMinutes") ?? 0
-        let updated = current + 1
-        sharedDefaults?.set(updated, forKey: "accumulatedUsageMinutes")
+        os_log("1-minute threshold reached for activity: %{public}@", activity.rawValue)
         
-        os_log("1-minute threshold hit. Updated usage to: %d minutes", updated)
-        
-        // 2) Re-arm the threshold by stopping + starting monitoring again
-        //    so we can catch the next minute.
+        Task {
+            await updateAccumulatedUsage()
+            await rearmThreshold()
+        }
+    }
+    
+    /// Updates the accumulated usage in the shared SwiftData database
+    private func updateAccumulatedUsage() async {
+        //await MainActor.run {
+            do {
+                let today = Calendar.current.startOfDay(for: Date())
+                let fetchDescriptor = FetchDescriptor<DailyActivity>(
+                    predicate: #Predicate { $0.date == $0.date }
+                )
+                
+                let container = try SharedContainer.makeConfiguration()
+
+                if container == nil{
+                    os_log("model context is nil")
+                    return
+                }
+                let context = container!.mainContext
+                
+                let existingData = try context.fetch(fetchDescriptor).first
+                if let data = existingData {
+                    data.totalMinutesOfActivity += 1
+                    os_log("Updated accumulated usage to: %d minutes", data.totalMinutesOfActivity)
+                } else {
+                    let newData = DailyActivity(date: today, totalMinutesOfActivity: 1)
+                    context.insert(newData)
+                    os_log("Created new activity record with 1 minute.")
+                }
+                //} catch {
+                //os_log("fetch error \(error)")
+                //}
+                
+                // Save the changes to the SwiftData store
+                try context.save()
+            } catch {
+                os_log("Failed to update accumulated usage: %{public}@", "\(error)")
+            }
+        //}
+    }
+    
+    /// Rearms the 1-minute threshold by stopping and restarting monitoring
+    private func rearmThreshold() async {
         do {
-            // First, stop monitoring for the current activity
+            // Stop monitoring the current activity
             center.stopMonitoring([activityName])
             
-            // Re-configure the same daily schedule
+            // Configure the daily monitoring schedule
             let schedule = DeviceActivitySchedule(
                 intervalStart: DateComponents(hour: 0, minute: 0),
                 intervalEnd: DateComponents(hour: 23, minute: 59),
                 repeats: true
             )
             
-            // Create the 1-minute threshold event again
-            // (In real usage, you might read from shared config if needed)
+            // Create the 1-minute threshold event
             let event = DeviceActivityEvent(
-                applications: [],     // If you can store tokens in shared defaults, retrieve them here
+                applications: [],
                 categories: [],
                 webDomains: [],
                 threshold: DateComponents(minute: 1)
             )
             
-            // The big question: do we have the user's actual tokens? 
-            // The extension typically doesn't know which apps the user selected. 
-            // => Option 1: Store the user's FamilyActivitySelection tokens in shared defaults too 
-            // => Option 2: Just re-arm an "all apps" or blank set. 
-            
-            // For simplicity, let's assume we only track the *exact tokens* if you stored them in shared defaults:
-            // let savedAppsData = sharedDefaults?.data(forKey: "selectedApps")
-            // decode to FamilyActivitySelection, if needed, then fill in the event. 
-            // Below is a simple skeleton.
-            
+            // Restart monitoring with the rearmed event
             try center.startMonitoring(
                 activityName,
                 during: schedule,
                 events: [eventName: event]
             )
             
-            os_log("Re-armed 1-minute threshold monitoring after incrementing usage.")
+            os_log("Rearmed 1-minute threshold monitoring.")
         } catch {
             os_log("Error re-arming threshold: %{public}@", "\(error)")
         }

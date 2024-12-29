@@ -57,6 +57,15 @@
 			name = "Embed ExtensionKit Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FAED18462D21E3DB006BE0B8 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -65,6 +74,7 @@
 		FA4B89052D1E1B1A007A5B6E /* ScreenBreakersUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScreenBreakersUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAED179D2D21BBFE006BE0B8 /* MonitorExt.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MonitorExt.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAED179F2D21BBFE006BE0B8 /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = System/Library/Frameworks/DeviceActivity.framework; sourceTree = SDKROOT; };
+		FAED18482D21E3DB006BE0B8 /* libCommonLib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCommonLib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -72,6 +82,30 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+			);
+			target = FAED179C2D21BBFE006BE0B8 /* MonitorExt */;
+		};
+		FAED184F2D21E3F7006BE0B8 /* Exceptions for "CommonLib" folder in "ScreenBreakers" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models.swift,
+				SharedContainer.swift,
+			);
+			target = FA4B88E82D1E1B19007A5B6E /* ScreenBreakers */;
+		};
+		FAED18502D21E3F7006BE0B8 /* Exceptions for "CommonLib" folder in "CommonLib" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models.swift,
+				SharedContainer.swift,
+			);
+			target = FAED18472D21E3DB006BE0B8 /* CommonLib */;
+		};
+		FAED18532D21E7A6006BE0B8 /* Exceptions for "CommonLib" folder in "MonitorExt" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models.swift,
+				SharedContainer.swift,
 			);
 			target = FAED179C2D21BBFE006BE0B8 /* MonitorExt */;
 		};
@@ -99,6 +133,16 @@
 				FAED17A92D21BBFE006BE0B8 /* Exceptions for "MonitorExt" folder in "MonitorExt" target */,
 			);
 			path = MonitorExt;
+			sourceTree = "<group>";
+		};
+		FAED18492D21E3DB006BE0B8 /* CommonLib */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FAED184F2D21E3F7006BE0B8 /* Exceptions for "CommonLib" folder in "ScreenBreakers" target */,
+				FAED18532D21E7A6006BE0B8 /* Exceptions for "CommonLib" folder in "MonitorExt" target */,
+				FAED18502D21E3F7006BE0B8 /* Exceptions for "CommonLib" folder in "CommonLib" target */,
+			);
+			path = CommonLib;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -133,6 +177,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FAED18452D21E3DB006BE0B8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -143,6 +194,7 @@
 				FA4B88FE2D1E1B1A007A5B6E /* ScreenBreakersTests */,
 				FA4B89082D1E1B1A007A5B6E /* ScreenBreakersUITests */,
 				FAED17A12D21BBFE006BE0B8 /* MonitorExt */,
+				FAED18492D21E3DB006BE0B8 /* CommonLib */,
 				FAED179E2D21BBFE006BE0B8 /* Frameworks */,
 				FA4B88EA2D1E1B19007A5B6E /* Products */,
 			);
@@ -155,6 +207,7 @@
 				FA4B88FB2D1E1B1A007A5B6E /* ScreenBreakersTests.xctest */,
 				FA4B89052D1E1B1A007A5B6E /* ScreenBreakersUITests.xctest */,
 				FAED179D2D21BBFE006BE0B8 /* MonitorExt.appex */,
+				FAED18482D21E3DB006BE0B8 /* libCommonLib.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -263,6 +316,28 @@
 			productReference = FAED179D2D21BBFE006BE0B8 /* MonitorExt.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		FAED18472D21E3DB006BE0B8 /* CommonLib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAED184C2D21E3DB006BE0B8 /* Build configuration list for PBXNativeTarget "CommonLib" */;
+			buildPhases = (
+				FAED18442D21E3DB006BE0B8 /* Sources */,
+				FAED18452D21E3DB006BE0B8 /* Frameworks */,
+				FAED18462D21E3DB006BE0B8 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				FAED18492D21E3DB006BE0B8 /* CommonLib */,
+			);
+			name = CommonLib;
+			packageProductDependencies = (
+			);
+			productName = CommonLib;
+			productReference = FAED18482D21E3DB006BE0B8 /* libCommonLib.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -287,6 +362,9 @@
 					FAED179C2D21BBFE006BE0B8 = {
 						CreatedOnToolsVersion = 16.2;
 					};
+					FAED18472D21E3DB006BE0B8 = {
+						CreatedOnToolsVersion = 16.2;
+					};
 				};
 			};
 			buildConfigurationList = FA4B88E42D1E1B19007A5B6E /* Build configuration list for PBXProject "ScreenBreakers" */;
@@ -307,6 +385,7 @@
 				FA4B88FA2D1E1B1A007A5B6E /* ScreenBreakersTests */,
 				FA4B89042D1E1B1A007A5B6E /* ScreenBreakersUITests */,
 				FAED179C2D21BBFE006BE0B8 /* MonitorExt */,
+				FAED18472D21E3DB006BE0B8 /* CommonLib */,
 			);
 		};
 /* End PBXProject section */
@@ -365,6 +444,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		FAED17992D21BBFE006BE0B8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FAED18442D21E3DB006BE0B8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -695,6 +781,32 @@
 			};
 			name = Release;
 		};
+		FAED184D2D21E3DB006BE0B8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8N2Z544SB4;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FAED184E2D21E3DB006BE0B8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8N2Z544SB4;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -739,6 +851,15 @@
 			buildConfigurations = (
 				FAED17AB2D21BBFE006BE0B8 /* Debug */,
 				FAED17AC2D21BBFE006BE0B8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAED184C2D21E3DB006BE0B8 /* Build configuration list for PBXNativeTarget "CommonLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAED184D2D21E3DB006BE0B8 /* Debug */,
+				FAED184E2D21E3DB006BE0B8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

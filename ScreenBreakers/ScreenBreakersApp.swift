@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct UsageMonitorApp: App {
@@ -31,5 +32,6 @@ struct UsageMonitorApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(SharedContainer.makeConfiguration()!)
     }
 }

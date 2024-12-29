@@ -4,20 +4,54 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>CommonLib.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>isShown</key>
+			<true/>
+			<key>orderHint</key>
+			<integer>3</integer>
+		</dict>
 		<key>MonitorExt.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<true/>
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
-		<key>ReportExt.xcscheme_^#shared#^_</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>2</integer>
-		</dict>
 		<key>ScreenBreakers.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<true/>
 			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>FA4B88E82D1E1B19007A5B6E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FA4B88FA2D1E1B1A007A5B6E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FA4B89042D1E1B1A007A5B6E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FAED179C2D21BBFE006BE0B8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FAED18472D21E3DB006BE0B8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>
