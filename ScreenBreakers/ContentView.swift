@@ -1,59 +1,50 @@
-//
-//  ContentView.swift
-//  UsageMonitor
-//
-//  Created by You on [Date].
-//
-
 import SwiftUI
 import FamilyControls
 
 struct ContentView: View {
+    @StateObject private var manager = ScreenTimeManager()
     
-    @StateObject private var screenTimeManager = ScreenTimeManager()
-    @State private var thresholdInput = "30" // Default threshold
+    @State private var accumulatedMinutes = 0
     
     var body: some View {
         VStack(spacing: 30) {
-            Text("Screen Time Monitoring")
-                .font(.largeTitle)
+            Text("1-Minute Threshold Demo")
+                .font(.title)
                 .padding(.top, 40)
             
-            Button("Request Screen Time Authorization") {
+            // Current "accumulated" usage read from the shared container
+            Text("Accumulated Usage: \(accumulatedMinutes) minutes")
+                .font(.headline)
+            
+            Button("Refresh Usage") {
+                accumulatedMinutes = manager.fetchAccumulatedUsageMinutes()
+            }
+            
+            Button("Request Screen Time Auth") {
                 Task {
-                    await screenTimeManager.requestAuthorization()
+                    await manager.requestAuthorization()
                 }
             }
             
             Button("Select Apps to Monitor") {
-                screenTimeManager.isPickerPresented = true
+                manager.isPickerPresented = true
             }
             
-            HStack {
-                Text("Threshold (minutes):")
-                TextField("Threshold", text: $thresholdInput)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.numberPad)
-                    .frame(width: 60)
-            }
-            .padding(.horizontal)
-            
-            Button("Start Monitoring") {
-                let threshold = Int(thresholdInput) ?? 30
-                screenTimeManager.startDailyMonitoring(thresholdMinutes: threshold)
+            Button("Start 1-Minute Threshold Monitoring") {
+                manager.startMonitoringOneMinuteThreshold()
             }
             
             Spacer()
         }
-        .familyActivityPicker(
-            isPresented: $screenTimeManager.isPickerPresented,
-            selection: $screenTimeManager.activitySelection
-        )
-        .onChange(of: screenTimeManager.activitySelection) { newSelection in
-            // Store each time user picks new apps/categories
-            screenTimeManager.storeSelection(newSelection)
-        }
         .padding()
+        .familyActivityPicker(isPresented: $manager.isPickerPresented,
+                              selection: $manager.activitySelection)
+        .onChange(of: manager.activitySelection) { newValue in
+            manager.storeSelection(newValue)
+        }
+        .onAppear {
+            accumulatedMinutes = manager.fetchAccumulatedUsageMinutes()
+        }
     }
 }
 
@@ -62,3 +53,4 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+

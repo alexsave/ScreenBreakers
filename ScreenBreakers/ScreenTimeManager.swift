@@ -1,87 +1,77 @@
-//
-//  ScreenTimeManager.swift
-//  ScreenBreakers
-//
-//  Created by Alex Saveliev on 12/29/24.
-//
-
-import Foundation
+import SwiftUI
 import FamilyControls
 import DeviceActivity
-import Combine
-import SwiftUI
 
 @MainActor
 class ScreenTimeManager: ObservableObject {
+    @Published var isPickerPresented = false
     
-    // For presenting the Family Activity Picker
-    @Published var isPickerPresented: Bool = false
+    // The user’s chosen apps/categories
+    @Published var activitySelection = FamilyActivitySelection()
     
-    // Stores the user’s chosen apps/categories
-    @Published var activitySelection: FamilyActivitySelection = FamilyActivitySelection()
-    
+    // We'll store a single "daily schedule" with a 1-minute threshold
     private let center = DeviceActivityCenter()
-    private let activityName = DeviceActivityName("com.example.usageMonitor.dailyActivity")
-    private let eventName = DeviceActivityEvent.Name("com.example.usageMonitor.thresholdEvent")
+    private let activityName = DeviceActivityName("group.com.alexs.ScreenBreakers.oneMinuteActivity")
+    private let eventName = DeviceActivityEvent.Name("group.com.alexs.ScreenBreakers.oneMinuteThresholdEvent")
+    
+    // Access the shared container
+    private let sharedDefaults = UserDefaults(suiteName: "group.com.alexs.ScreenBreakers")
     
     // MARK: - Request Authorization
     
-    /// Requests authorization to monitor usage on this same device (not a child device).
     func requestAuthorization() async {
         do {
             try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
             print("Screen Time authorization granted.")
         } catch {
-            print("Error requesting Screen Time authorization: \(error)")
+            print("Failed to request authorization: \(error)")
         }
     }
     
-    // MARK: - Save / Load Selection
+    // MARK: - Store / Load Selection
     
-    /// Optionally persist the user's FamilyActivitySelection in UserDefaults
     func storeSelection(_ selection: FamilyActivitySelection) {
         do {
             let data = try PropertyListEncoder().encode(selection)
-            UserDefaults.standard.set(data, forKey: "SelectedFamilyActivity")
+            UserDefaults.standard.set(data, forKey: "FamilyActivitySelection")
         } catch {
-            print("Failed to store selection: \(error)")
+            print("Error encoding selection: \(error)")
         }
     }
     
-    /// Retrieve a stored FamilyActivitySelection from UserDefaults
     func loadSelection() -> FamilyActivitySelection? {
-        guard let data = UserDefaults.standard.data(forKey: "SelectedFamilyActivity") else {
+        guard let data = UserDefaults.standard.data(forKey: "FamilyActivitySelection") else {
             return nil
         }
         return try? PropertyListDecoder().decode(FamilyActivitySelection.self, from: data)
     }
     
-    // MARK: - Start Monitoring
+    // MARK: - Start Monitoring (1-minute threshold)
     
-    /// Schedules daily monitoring from midnight to 23:59 with an optional threshold event.
-    func startDailyMonitoring(thresholdMinutes: Int) {
-        // Load any previously saved selection
+    /// Sets up a daily schedule from 00:00 - 23:59 with a 1-minute threshold.
+    /// The extension will increment "accumulated usage" each time the user crosses that minute of usage.
+    func startMonitoringOneMinuteThreshold() {
+        // Reload selection if available
         if let saved = loadSelection() {
             activitySelection = saved
         }
         
-        // Stop existing monitoring (optional, if you need a fresh start)
+        // Stop any existing monitoring to re-arm
         center.stopMonitoring([activityName])
         
+        // A daily schedule
         let schedule = DeviceActivitySchedule(
-            intervalStart: DateComponents(hour: 0, minute: 0, second: 0),
-            intervalEnd: DateComponents(hour: 23, minute: 59, second: 59),
-            repeats: true,
-            warningTime: DateComponents(minute: 1) // optional 1-min warning
+            intervalStart: DateComponents(hour: 0, minute: 0),
+            intervalEnd: DateComponents(hour: 23, minute: 59),
+            repeats: true
         )
         
-        // Create an event that triggers at 'thresholdMinutes' of usage 
-        // across the selected apps/web domains.
+        // 1-minute threshold event
         let event = DeviceActivityEvent(
             applications: activitySelection.applicationTokens,
             categories: activitySelection.categoryTokens,
             webDomains: activitySelection.webDomainTokens,
-            threshold: DateComponents(minute: thresholdMinutes)
+            threshold: DateComponents(minute: 1)
         )
         
         do {
@@ -90,9 +80,21 @@ class ScreenTimeManager: ObservableObject {
                 during: schedule,
                 events: [eventName: event]
             )
-            print("Started daily monitoring with a \(thresholdMinutes)-minute threshold.")
+            print("Started 1-minute threshold monitoring.")
+            
+            // Reset the shared usage if you want to start fresh daily, or do it in extension
+            // sharedDefaults?.set(0, forKey: "accumulatedUsageMinutes")
+            
         } catch {
             print("Failed to start monitoring: \(error)")
         }
     }
+    
+    // MARK: - Read Accumulated Usage from Shared Defaults
+    
+    /// Reads the "accumulatedUsageMinutes" from the shared container (updated by the extension).
+    func fetchAccumulatedUsageMinutes() -> Int {
+        return sharedDefaults?.integer(forKey: "accumulatedUsageMinutes") ?? 0
+    }
 }
+

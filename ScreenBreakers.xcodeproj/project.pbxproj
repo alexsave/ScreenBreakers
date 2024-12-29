@@ -47,6 +47,16 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FAED17C72D21CCBA006BE0B8 /* Embed ExtensionKit Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			name = "Embed ExtensionKit Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -168,6 +178,7 @@
 				FA4B88E62D1E1B19007A5B6E /* Frameworks */,
 				FA4B88E72D1E1B19007A5B6E /* Resources */,
 				FAED17AD2D21BBFE006BE0B8 /* Embed Foundation Extensions */,
+				FAED17C72D21CCBA006BE0B8 /* Embed ExtensionKit Extensions */,
 			);
 			buildRules = (
 			);
