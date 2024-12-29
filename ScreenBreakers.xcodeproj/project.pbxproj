@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FAED17A02D21BBFE006BE0B8 /* DeviceActivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAED179F2D21BBFE006BE0B8 /* DeviceActivity.framework */; };
+		FAED17A82D21BBFE006BE0B8 /* MonitorExt.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FAED179D2D21BBFE006BE0B8 /* MonitorExt.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		FA4B88FC2D1E1B1A007A5B6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,13 +26,46 @@
 			remoteGlobalIDString = FA4B88E82D1E1B19007A5B6E;
 			remoteInfo = ScreenBreakers;
 		};
+		FAED17A62D21BBFE006BE0B8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA4B88E12D1E1B19007A5B6E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FAED179C2D21BBFE006BE0B8;
+			remoteInfo = MonitorExt;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FAED17AD2D21BBFE006BE0B8 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				FAED17A82D21BBFE006BE0B8 /* MonitorExt.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		FA4B88E92D1E1B19007A5B6E /* ScreenBreakers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenBreakers.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4B88FB2D1E1B1A007A5B6E /* ScreenBreakersTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScreenBreakersTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4B89052D1E1B1A007A5B6E /* ScreenBreakersUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScreenBreakersUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAED179D2D21BBFE006BE0B8 /* MonitorExt.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MonitorExt.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAED179F2D21BBFE006BE0B8 /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = System/Library/Frameworks/DeviceActivity.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		FAED17A92D21BBFE006BE0B8 /* Exceptions for "MonitorExt" folder in "MonitorExt" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = FAED179C2D21BBFE006BE0B8 /* MonitorExt */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FA4B88EB2D1E1B19007A5B6E /* ScreenBreakers */ = {
@@ -43,6 +81,14 @@
 		FA4B89082D1E1B1A007A5B6E /* ScreenBreakersUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = ScreenBreakersUITests;
+			sourceTree = "<group>";
+		};
+		FAED17A12D21BBFE006BE0B8 /* MonitorExt */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FAED17A92D21BBFE006BE0B8 /* Exceptions for "MonitorExt" folder in "MonitorExt" target */,
+			);
+			path = MonitorExt;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +115,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FAED179A2D21BBFE006BE0B8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAED17A02D21BBFE006BE0B8 /* DeviceActivity.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -78,6 +132,8 @@
 				FA4B88EB2D1E1B19007A5B6E /* ScreenBreakers */,
 				FA4B88FE2D1E1B1A007A5B6E /* ScreenBreakersTests */,
 				FA4B89082D1E1B1A007A5B6E /* ScreenBreakersUITests */,
+				FAED17A12D21BBFE006BE0B8 /* MonitorExt */,
+				FAED179E2D21BBFE006BE0B8 /* Frameworks */,
 				FA4B88EA2D1E1B19007A5B6E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,8 +144,17 @@
 				FA4B88E92D1E1B19007A5B6E /* ScreenBreakers.app */,
 				FA4B88FB2D1E1B1A007A5B6E /* ScreenBreakersTests.xctest */,
 				FA4B89052D1E1B1A007A5B6E /* ScreenBreakersUITests.xctest */,
+				FAED179D2D21BBFE006BE0B8 /* MonitorExt.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		FAED179E2D21BBFE006BE0B8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FAED179F2D21BBFE006BE0B8 /* DeviceActivity.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -102,10 +167,12 @@
 				FA4B88E52D1E1B19007A5B6E /* Sources */,
 				FA4B88E62D1E1B19007A5B6E /* Frameworks */,
 				FA4B88E72D1E1B19007A5B6E /* Resources */,
+				FAED17AD2D21BBFE006BE0B8 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				FAED17A72D21BBFE006BE0B8 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				FA4B88EB2D1E1B19007A5B6E /* ScreenBreakers */,
@@ -163,6 +230,28 @@
 			productReference = FA4B89052D1E1B1A007A5B6E /* ScreenBreakersUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		FAED179C2D21BBFE006BE0B8 /* MonitorExt */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAED17AA2D21BBFE006BE0B8 /* Build configuration list for PBXNativeTarget "MonitorExt" */;
+			buildPhases = (
+				FAED17992D21BBFE006BE0B8 /* Sources */,
+				FAED179A2D21BBFE006BE0B8 /* Frameworks */,
+				FAED179B2D21BBFE006BE0B8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				FAED17A12D21BBFE006BE0B8 /* MonitorExt */,
+			);
+			name = MonitorExt;
+			packageProductDependencies = (
+			);
+			productName = MonitorExt;
+			productReference = FAED179D2D21BBFE006BE0B8 /* MonitorExt.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -184,6 +273,9 @@
 						CreatedOnToolsVersion = 16.2;
 						TestTargetID = FA4B88E82D1E1B19007A5B6E;
 					};
+					FAED179C2D21BBFE006BE0B8 = {
+						CreatedOnToolsVersion = 16.2;
+					};
 				};
 			};
 			buildConfigurationList = FA4B88E42D1E1B19007A5B6E /* Build configuration list for PBXProject "ScreenBreakers" */;
@@ -203,6 +295,7 @@
 				FA4B88E82D1E1B19007A5B6E /* ScreenBreakers */,
 				FA4B88FA2D1E1B1A007A5B6E /* ScreenBreakersTests */,
 				FA4B89042D1E1B1A007A5B6E /* ScreenBreakersUITests */,
+				FAED179C2D21BBFE006BE0B8 /* MonitorExt */,
 			);
 		};
 /* End PBXProject section */
@@ -223,6 +316,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		FA4B89032D1E1B1A007A5B6E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FAED179B2D21BBFE006BE0B8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -253,6 +353,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FAED17992D21BBFE006BE0B8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -265,6 +372,11 @@
 			isa = PBXTargetDependency;
 			target = FA4B88E82D1E1B19007A5B6E /* ScreenBreakers */;
 			targetProxy = FA4B89062D1E1B1A007A5B6E /* PBXContainerItemProxy */;
+		};
+		FAED17A72D21BBFE006BE0B8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FAED179C2D21BBFE006BE0B8 /* MonitorExt */;
+			targetProxy = FAED17A62D21BBFE006BE0B8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -393,6 +505,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ScreenBreakers/ScreenBreakers.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ScreenBreakers/Preview Content\"";
@@ -422,6 +535,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ScreenBreakers/ScreenBreakers.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ScreenBreakers/Preview Content\"";
@@ -518,6 +632,58 @@
 			};
 			name = Release;
 		};
+		FAED17AB2D21BBFE006BE0B8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MonitorExt/MonitorExt.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8N2Z544SB4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MonitorExt/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MonitorExt;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexs.ScreenBreakers.MonitorExt;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FAED17AC2D21BBFE006BE0B8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MonitorExt/MonitorExt.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8N2Z544SB4;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MonitorExt/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MonitorExt;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexs.ScreenBreakers.MonitorExt;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -553,6 +719,15 @@
 			buildConfigurations = (
 				FA4B89162D1E1B1A007A5B6E /* Debug */,
 				FA4B89172D1E1B1A007A5B6E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAED17AA2D21BBFE006BE0B8 /* Build configuration list for PBXNativeTarget "MonitorExt" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAED17AB2D21BBFE006BE0B8 /* Debug */,
+				FAED17AC2D21BBFE006BE0B8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
