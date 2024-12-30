@@ -5,7 +5,7 @@ import Foundation
 import SwiftData
 
 struct ModelConfigurationManager {
-    
+
     private static var container: ModelContainer?
     
     static func makeConfiguration() throws -> ModelContainer {
@@ -63,10 +63,35 @@ struct ContentView: View {
         .padding()
         .familyActivityPicker(isPresented: $manager.isPickerPresented,
                               selection: $manager.activitySelection)
+                              // save family activity selection to shared defaults
         .onChange(of: manager.activitySelection) { newValue in
+            let sharedDefaults = UserDefaults(suiteName: "group.com.alexs.ScreenBreakers")
+            // save family activity selection to shared defaults
+            let encoder = JSONEncoder()
+            let encoded = try? encoder.encode(newValue)
+            sharedDefaults?.set(encoded, forKey: "activitySelection")
             // check if we have authorization, if so, start monitoring
             if AuthorizationCenter.shared.authorizationStatus == .approved {
                 manager.startMonitoringOneMinuteThreshold()
+            }
+        }
+        .onAppear {
+            // load family activity selection from shared defaults
+            let sharedDefaults = UserDefaults(suiteName: "group.com.alexs.ScreenBreakers")
+            let decoder = JSONDecoder()
+            let decoded = sharedDefaults?.data(forKey: "activitySelection")
+            print("got decoded")
+            if decoded != nil {
+                do {
+                    let activitySelection = try? decoder.decode(FamilyActivitySelection.self, from: decoded!)
+                    print("got activity selection")
+                    manager.activitySelection = activitySelection!
+                    print("set activity selection")
+                    if AuthorizationCenter.shared.authorizationStatus == .approved {
+                        print("monitoring automatically becuase already approved and selections set")
+                        manager.startMonitoringOneMinuteThreshold()
+                    }
+                }catch {}
             }
         }
     }
