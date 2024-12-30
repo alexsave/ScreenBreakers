@@ -46,7 +46,7 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
                 let existingData = try context.fetch(fetchDescriptor).first
                 if let data = existingData {
                     data.totalScreenMinutes += 1
-                    os_log("Updated accumulated usage to: %d minutes", data.totalScreenMinutes)
+                    os_log("Updated accumulated usage to: %f minutes", data.totalScreenMinutes)
                 } else {
                     // must be new
                     let newData = DailyActivity(date: today, totalScreenMinutes: 1, totalMonitoringMinutes: 0)

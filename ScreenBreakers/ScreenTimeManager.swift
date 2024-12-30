@@ -15,8 +15,6 @@ class ScreenTimeManager: ObservableObject {
     private let eventName = DeviceActivityEvent.Name("group.com.alexs.ScreenBreakers.oneMinuteThresholdEvent")
     
     // Access the shared container
-    private let sharedDefaults = UserDefaults(suiteName: "group.com.alexs.ScreenBreakers")
-    
     // MARK: - Request Authorization
     
     func requestAuthorization() async {
@@ -83,18 +81,11 @@ class ScreenTimeManager: ObservableObject {
             print("Started 1-minute threshold monitoring.")
             
             // Reset the shared usage if you want to start fresh daily, or do it in extension
-            // sharedDefaults?.set(0, forKey: "accumulatedUsageMinutes")
             
         } catch {
             print("Failed to start monitoring: \(error)")
         }
     }
     
-    // MARK: - Read Accumulated Usage from Shared Defaults
-    
-    /// Reads the "accumulatedUsageMinutes" from the shared container (updated by the extension).
-    func fetchAccumulatedUsageMinutes() -> Int {
-        return sharedDefaults?.integer(forKey: "accumulatedUsageMinutes") ?? 0
-    }
 }
 
