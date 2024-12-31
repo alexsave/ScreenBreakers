@@ -14,15 +14,6 @@ struct PlayerStatsView: View {
             HStack(spacing: 16) {
                 // Title with edit button
                 HStack(spacing: 4) {
-                    Text(playerName)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .lineLimit(1)
-                    
-                    Button(action: { isEditingPlayerName = true }) {
-                        Image(systemName: "pencil")
-                            .foregroundColor(.blue)
-                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
