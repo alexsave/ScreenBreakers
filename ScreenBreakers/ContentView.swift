@@ -48,72 +48,12 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Action buttons
-                HStack {
-                    Spacer()
-                    
-                    HStack(spacing: 16) {
-                        Button(action: {
-                            Task {
-                                await manager.requestAuthorization()
-                                if manager.isAuthorized {
-                                    manager.isPickerPresented = true
-                                }
-                            }
-                        }) {
-                            Image(systemName: "play.circle.fill")
-                                .font(.system(size: 24))
-                                .foregroundColor(.green)
-                        }
-                        
-                        Button(action: {
-                            Task {
-                                await viewModel.shareLeaderboard()
-                                if viewModel.shareURL != nil {
-                                    isShowingShareSheet = true
-                                }
-                            }
-                        }) {
-                            Image(systemName: "square.and.arrow.up")
-                                .font(.system(size: 24))
-                                .foregroundColor(.blue)
-                        }
-                    }
-                }
-                .padding()
-                .background(Color(.systemBackground))
+                ActionButtons(manager: manager, viewModel: viewModel, isShowingShareSheet: $isShowingShareSheet)
                 
                 if !manager.isAuthorized {
                     PrivacyExplanationView()
                 } else if viewModel.currentLeaderboard == nil {
-                    VStack(spacing: 20) {
-                        // Show current player's stats
-                        LeaderboardRow(
-                            rank: 1,
-                            playerName: viewModel.playerName,
-                            minutes: todayMinutes,
-                            isAlternate: false
-                        )
-                        .padding(.horizontal)
-                        
-                        Spacer()
-                        
-                        // Empty state message
-                        VStack(spacing: 16) {
-                            Image(systemName: "person.3.fill")
-                                .font(.system(size: 60))
-                                .foregroundColor(.gray)
-                            Text("Share to Start a Leaderboard")
-                                .font(.title2)
-                                .foregroundColor(.gray)
-                            Text("Tap the share button above to create a leaderboard\nand invite your friends!")
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(.gray)
-                        }
-                        
-                        Spacer()
-                    }
-                    .padding()
+                    PlayerStatsView(playerName: viewModel.playerName, todayMinutes: todayMinutes)
                 } else {
                     LeaderboardView(
                         viewModel: viewModel,
@@ -124,16 +64,7 @@ struct ContentView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    if isEditingPlayerName {
-                        TextField("Your Name", text: $viewModel.playerName)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .frame(width: 120)
-                            .onSubmit { isEditingPlayerName = false }
-                    } else {
-                        Button(viewModel.playerName) {
-                            isEditingPlayerName = true
-                        }
-                    }
+                    PlayerNameEditor(isEditingPlayerName: $isEditingPlayerName, playerName: $viewModel.playerName)
                 }
             }
         }
