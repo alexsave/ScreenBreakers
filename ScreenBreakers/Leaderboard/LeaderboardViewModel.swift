@@ -3,16 +3,18 @@ import SwiftUI
 @MainActor
 class LeaderboardViewModel: ObservableObject {
     private let defaults = UserDefaults.standard
-    private let userIdKey = "user_id"
     private let userNameKey = "user_name"
-    private let leaderboardIdKey = "leaderboard_id"
-    private let server = MockLeaderboardServer.shared
+    private let supabase = SupabaseManager.shared
     
     @Published var leaderboardName: String {
         didSet {
-            guard let leaderboardId = leaderboardId else { return }
+            guard let leaderboardId = supabase.currentLeaderboardId else { return }
             Task {
-                await server.updateLeaderboardName(leaderboardId: leaderboardId, newName: leaderboardName)
+                do {
+                    try await supabase.updateLeaderboardName(leaderboardId: leaderboardId, newName: leaderboardName)
+                } catch {
+                    print("Failed to update leaderboard name: \(error)")
+                }
             }
         }
     }
@@ -20,9 +22,12 @@ class LeaderboardViewModel: ObservableObject {
     @Published var playerName: String {
         didSet {
             defaults.set(playerName, forKey: userNameKey)
-            guard let userId = userId else { return }
             Task {
-                await server.updatePlayerName(userId: userId, newName: playerName)
+                do {
+                    _ = try await supabase.createOrUpdateUser(name: playerName)
+                } catch {
+                    print("Failed to update player name: \(error)")
+                }
             }
         }
     }
@@ -30,94 +35,33 @@ class LeaderboardViewModel: ObservableObject {
     @Published var currentLeaderboard: LeaderboardData?
     @Published var shareURL: URL?
     
-    var userId: String? {
-        didSet {
-            if let userId = userId {
-                defaults.set(userId, forKey: userIdKey)
-            }
-        }
-    }
-    
-    private(set) var leaderboardId: String? {
-        didSet {
-            if let leaderboardId = leaderboardId {
-                defaults.set(leaderboardId, forKey: leaderboardIdKey)
-                // Only fetch if we're not in the middle of creating/joining
-                if currentLeaderboard == nil {
-                    Task {
-                        await fetchLeaderboard()
-                    }
-                }
-            } else {
-                defaults.removeObject(forKey: leaderboardIdKey)
-                currentLeaderboard = nil
-                leaderboardName = ""
-            }
-        }
-    }
-    
     init() {
         // Load existing values from UserDefaults
-        self.userId = defaults.string(forKey: userIdKey)
         self.playerName = defaults.string(forKey: userNameKey) ?? "Player 1"
         self.leaderboardName = ""
         
-        // If no user ID exists, generate one and save initial player name
-        if self.userId == nil {
-            self.userId = UUID().uuidString
-            defaults.set(self.playerName, forKey: userNameKey)
-        }
-        
-        // Initialize without a leaderboard
-        self.leaderboardId = nil
-        self.currentLeaderboard = nil
-        
-        // Then try to load the leaderboard if we have an ID
-        if let leaderboardId = defaults.string(forKey: leaderboardIdKey) {
-            Task {
-                await loadExistingLeaderboard(id: leaderboardId)
-            }
-        }
-    }
-    
-    private func loadExistingLeaderboard(id: String) async {
-        if let leaderboard = await server.getLeaderboard(id: id) {
-            withAnimation {
-                self.leaderboardId = id
-                self.leaderboardName = leaderboard.name
-                self.currentLeaderboard = leaderboard
-            }
-        } else {
-            // If we can't load the leaderboard, clear the ID from defaults
-            defaults.removeObject(forKey: leaderboardIdKey)
-        }
-    }
-    
-    func handleDeepLink(_ url: URL) {
-        guard url.scheme == "screenbreakers",
-              let leaderboardId = url.host else {
-            print("Invalid deep link format")
-            return
-        }
-        
+        // Create initial user if needed
         Task {
-            await joinLeaderboard(withId: leaderboardId)
+            do {
+                _ = try await supabase.createOrUpdateUser(name: playerName)
+            } catch {
+                print("Failed to create initial user: \(error)")
+            }
         }
     }
     
     private func fetchLeaderboard() async {
-        guard let leaderboardId = leaderboardId else {
-            currentLeaderboard = nil
-            leaderboardName = ""
-            return
-        }
-        
-        if let leaderboard = await server.getLeaderboard(id: leaderboardId) {
-            self.currentLeaderboard = leaderboard
-            self.leaderboardName = leaderboard.name
-        } else {
-            // If we can't fetch the leaderboard, clear everything
-            self.leaderboardId = nil
+        do {
+            let members = try await supabase.getLeaderboardData()
+            self.currentLeaderboard = LeaderboardData(
+                id: supabase.currentLeaderboardId ?? "",
+                name: leaderboardName,
+                players: members.map { member in
+                    (id: member.userId.uuidString, name: member.userName, minutes: member.todayMinutes)
+                }
+            )
+        } catch {
+            print("Failed to fetch leaderboard: \(error)")
             self.currentLeaderboard = nil
             self.leaderboardName = ""
         }
@@ -125,52 +69,50 @@ class LeaderboardViewModel: ObservableObject {
     
     func shareLeaderboard() async {
         print("📱 Starting shareLeaderboard")
-        guard let userId = userId else {
-            print("❌ No userId found")
-            return
-        }
-        print("📱 UserId: \(userId)")
         
         // If we don't have a leaderboard yet, create one
         if currentLeaderboard == nil {
             print("📱 Creating new leaderboard")
-            let newLeaderboardId = String(UUID().uuidString.prefix(7))
-            let newLeaderboardName = "Leaderboard"
-            print("📱 New leaderboard ID: \(newLeaderboardId), name: \(newLeaderboardName)")
-            
-            let leaderboard = await server.createAndJoinLeaderboard(
-                userId: userId,
-                userName: playerName,
-                leaderboardId: newLeaderboardId,
-                leaderboardName: newLeaderboardName
-            )
-            print("📱 Got leaderboard response: \(leaderboard)")
-            
-            // Set all properties in a single update
-            withAnimation {
-                self.leaderboardId = newLeaderboardId
-                self.leaderboardName = newLeaderboardName
-                self.currentLeaderboard = leaderboard
+            do {
+                let leaderboardId = try await supabase.createLeaderboard(name: "Leaderboard")
+                print("📱 Created leaderboard with ID: \(leaderboardId)")
+                await fetchLeaderboard()
+            } catch {
+                print("Failed to create leaderboard: \(error)")
+                return
             }
-            print("📱 Set all leaderboard properties")
         }
         
-        if let leaderboardId = leaderboardId {
+        if let leaderboardId = supabase.currentLeaderboardId {
             shareURL = URL(string: "screenbreakers://\(leaderboardId)")
             print("📱 Set share URL: \(shareURL?.absoluteString ?? "nil")")
         }
     }
     
     func joinLeaderboard(withId id: String) async -> LeaderboardData? {
-        guard let userId = userId else { return nil }
-        if let leaderboard = await server.joinExistingLeaderboard(leaderboardId: id, userId: userId, userName: playerName) {
-            withAnimation {
-                self.leaderboardId = id
-                self.leaderboardName = leaderboard.name
-                self.currentLeaderboard = leaderboard
-            }
-            return leaderboard
+        do {
+            try await supabase.joinLeaderboard(id: id)
+            await fetchLeaderboard()
+            return currentLeaderboard
+        } catch {
+            print("Failed to join leaderboard: \(error)")
+            return nil
         }
-        return nil
     }
+    
+    func updateScreenTime(minutes: Int) async {
+        do {
+            try await supabase.updateDailyUsage(minutes: minutes)
+            await fetchLeaderboard() // Refresh leaderboard data
+        } catch {
+            print("Failed to update screen time: \(error)")
+        }
+    }
+}
+
+// Helper struct to maintain compatibility with existing views
+struct LeaderboardData {
+    let id: String
+    var name: String
+    var players: [(id: String, name: String, minutes: Int)]
 } 

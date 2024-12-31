@@ -92,4 +92,4 @@ struct PlayerStatsView: View {
             )
         }
     }
-} 
+}

@@ -31,14 +31,16 @@ struct ModelConfigurationManager {
 }
 
 struct ContentView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @Query private var dailyActivities: [DailyActivity]
-    @StateObject private var manager = ScreenTimeManager()
-    @StateObject private var viewModel = LeaderboardViewModel()
+    @StateObject private var leaderboardViewModel = LeaderboardViewModel()
+    @StateObject private var screenTimeManager = ScreenTimeManager()
     @EnvironmentObject private var deepLinkManager: DeepLinkManager
-    @State private var isEditingLeaderboardName = false
+    
     @State private var isEditingPlayerName = false
+    @State private var isEditingLeaderboardName = false
     @State private var isShowingShareSheet = false
-    @State private var showJoinError = false
+    @State private var isShowingPrivacyExplanation = false
     
     private var todayMinutes: Int {
         let today = Calendar.current.startOfDay(for: Date())
@@ -48,95 +50,59 @@ struct ContentView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                if !manager.isAuthorized {
-                    PrivacyExplanationView(
-                        isMonitoring: .init(
-                            get: { manager.isAuthorized },
-                            set: { isMonitoring in
-                                Task {
-                                    if isMonitoring {
-                                        await manager.requestAuthorization()
-                                        if manager.isAuthorized {
-                                            manager.isPickerPresented = true
-                                        }
-                                    }
-                                }
-                            }
-                        )
-                    )
-                } else if viewModel.currentLeaderboard == nil {
-                    PlayerStatsView(
-                        isEditingPlayerName: $isEditingPlayerName,
-                        playerName: $viewModel.playerName,
-                        isMonitoring: .constant(manager.isAuthorized),
-                        isShowingShareSheet: $isShowingShareSheet,
-                        todayMinutes: todayMinutes,
-                        onShare: {
-                            await viewModel.shareLeaderboard()
-                        }
-                    )
-                } else {
-                    LeaderboardView(
-                        viewModel: viewModel,
-                        isEditingLeaderboardName: $isEditingLeaderboardName,
-                        isEditingPlayerName: $isEditingPlayerName,
-                        isMonitoring: .constant(manager.isAuthorized)
-                    )
+        TabView {
+            PlayerStatsView(
+                isEditingPlayerName: $isEditingPlayerName,
+                playerName: $leaderboardViewModel.playerName,
+                isMonitoring: .constant(screenTimeManager.isAuthorized),
+                isShowingShareSheet: $isShowingShareSheet,
+                todayMinutes: todayMinutes,
+                onShare: {
+                    await leaderboardViewModel.shareLeaderboard()
+                }
+            )
+            .tabItem {
+                Label("Stats", systemImage: "chart.bar.fill")
+            }
+            
+            LeaderboardView(
+                viewModel: leaderboardViewModel,
+                isEditingLeaderboardName: $isEditingLeaderboardName,
+                isEditingPlayerName: $isEditingPlayerName,
+                isMonitoring: .constant(screenTimeManager.isAuthorized)
+            )
+            .tabItem {
+                Label("Leaderboard", systemImage: "list.number")
+            }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                // Update Supabase with current screen time when app becomes active
+                Task {
+                    await leaderboardViewModel.updateScreenTime(minutes: todayMinutes)
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .background(Color(.systemBackground))
+        }
+        .onChange(of: deepLinkManager.pendingLeaderboardId) { _, newId in
+            if let id = newId {
+                Task {
+                    await leaderboardViewModel.joinLeaderboard(withId: id)
+                    deepLinkManager.pendingLeaderboardId = nil
+                }
+            }
         }
         .sheet(isPresented: $isShowingShareSheet) {
-            if let shareURL = viewModel.shareURL {
-                ShareSheet(activityItems: [shareURL])
-                    .presentationDetents([.medium])
+            if let url = leaderboardViewModel.shareURL {
+                ShareSheet(activityItems: [url])
             }
         }
-        .alert("Couldn't Join Leaderboard", isPresented: $showJoinError) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text("The leaderboard you're trying to join doesn't exist or is no longer available.")
-        }
-        .familyActivityPicker(isPresented: $manager.isPickerPresented,
-                            selection: $manager.activitySelection)
-        .onChange(of: manager.activitySelection) { newValue in
-            manager.storeSelection(newValue)
-            if manager.isAuthorized {
-                manager.startMonitoringOneMinuteThreshold()
-            }
-        }
-        .onChange(of: deepLinkManager.pendingLeaderboardId) { leaderboardId in
-            guard let leaderboardId = leaderboardId else { return }
-            
-            // Clear the pending ID immediately to prevent duplicate joins
-            deepLinkManager.pendingLeaderboardId = nil
-            
-            // Attempt to join the leaderboard
-            Task {
-                if await viewModel.joinLeaderboard(withId: leaderboardId) == nil {
-                    showJoinError = true
-                }
-            }
+        .sheet(isPresented: $isShowingPrivacyExplanation) {
+            PrivacyExplanationView(isPresented: $isShowingPrivacyExplanation)
         }
         .onAppear {
-            Task {
-                let sharedDefaults = UserDefaults(suiteName: "group.com.alexs.ScreenBreakers")
-                let decoder = JSONDecoder()
-                let decoded = sharedDefaults?.data(forKey: "activitySelection")
-                if decoded != nil {
-                    let activitySelection = try? decoder.decode(FamilyActivitySelection.self, from: decoded!)
-                    manager.activitySelection = activitySelection!
-                    if AuthorizationCenter.shared.authorizationStatus == .approved {
-                        manager.startMonitoringOneMinuteThreshold()
-                    }
-                }
+            if !screenTimeManager.isAuthorized {
+                isShowingPrivacyExplanation = true
             }
-        }
-        .onOpenURL { url in
-            deepLinkManager.handleDeepLink(url)
         }
     }
 }
