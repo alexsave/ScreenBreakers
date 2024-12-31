@@ -56,7 +56,9 @@ struct ContentView: View {
                         Button(action: {
                             Task {
                                 await manager.requestAuthorization()
-                                manager.isPickerPresented = true
+                                if manager.isAuthorized {
+                                    manager.isPickerPresented = true
+                                }
                             }
                         }) {
                             Image(systemName: "play.circle.fill")
@@ -81,7 +83,9 @@ struct ContentView: View {
                 .padding()
                 .background(Color(.systemBackground))
                 
-                if viewModel.currentLeaderboard == nil {
+                if !manager.isAuthorized {
+                    PrivacyExplanationView()
+                } else if viewModel.currentLeaderboard == nil {
                     VStack(spacing: 20) {
                         // Show current player's stats
                         LeaderboardRow(
@@ -146,11 +150,8 @@ struct ContentView: View {
         .familyActivityPicker(isPresented: $manager.isPickerPresented,
                             selection: $manager.activitySelection)
         .onChange(of: manager.activitySelection) { newValue in
-            let sharedDefaults = UserDefaults(suiteName: "group.com.alexs.ScreenBreakers")
-            let encoder = JSONEncoder()
-            let encoded = try? encoder.encode(newValue)
-            sharedDefaults?.set(encoded, forKey: "activitySelection")
-            if AuthorizationCenter.shared.authorizationStatus == .approved {
+            manager.storeSelection(newValue)
+            if manager.isAuthorized {
                 manager.startMonitoringOneMinuteThreshold()
             }
         }
