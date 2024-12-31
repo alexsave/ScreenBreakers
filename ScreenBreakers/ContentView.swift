@@ -47,7 +47,6 @@ struct ContentView: View {
                 VStack(alignment: .leading) {
                     Text("Date: \(dailyActivity.date)")
                     Text("Total Minutes of Activity: \(dailyActivity.totalScreenMinutes)")
-                    Text("Total Active Time: \(dailyActivity.totalMonitoringMinutes)")
                 }
             }
             Button("Start Monitoring") {
@@ -76,13 +75,13 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            // load family activity selection from shared defaults
-            let sharedDefaults = UserDefaults(suiteName: "group.com.alexs.ScreenBreakers")
-            let decoder = JSONDecoder()
-            let decoded = sharedDefaults?.data(forKey: "activitySelection")
-            print("got decoded")
-            if decoded != nil {
-                do {
+            Task{
+                // load family activity selection from shared defaults
+                let sharedDefaults = UserDefaults(suiteName: "group.com.alexs.ScreenBreakers")
+                let decoder = JSONDecoder()
+                let decoded = sharedDefaults?.data(forKey: "activitySelection")
+                print("got decoded")
+                if decoded != nil {
                     let activitySelection = try? decoder.decode(FamilyActivitySelection.self, from: decoded!)
                     print("got activity selection")
                     manager.activitySelection = activitySelection!
@@ -91,7 +90,7 @@ struct ContentView: View {
                         print("monitoring automatically becuase already approved and selections set")
                         manager.startMonitoringOneMinuteThreshold()
                     }
-                }catch {}
+                }
             }
         }
     }

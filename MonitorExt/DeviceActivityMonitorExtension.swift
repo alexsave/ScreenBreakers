@@ -49,7 +49,7 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
                     os_log("Updated accumulated usage to: %f minutes", data.totalScreenMinutes)
                 } else {
                     // must be new
-                    let newData = DailyActivity(date: today, totalScreenMinutes: 1, totalMonitoringMinutes: 0)
+                    let newData = DailyActivity(date: today, totalScreenMinutes: 1)
                     context.insert(newData)
                     os_log("Created new activity record with 1 minute.")
                 }

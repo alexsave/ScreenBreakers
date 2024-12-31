@@ -13,13 +13,10 @@ class DailyActivity {
     @Attribute(.unique) var date: Date
     //var id: UUID = UUID()
     var totalScreenMinutes: Double
-    // This app open and recording
-    var totalMonitoringMinutes: Double
 
-    init(date: Date, totalScreenMinutes: Double, totalMonitoringMinutes: Double) {
+    init(date: Date, totalScreenMinutes: Double) {
         self.date = date
         self.totalScreenMinutes = totalScreenMinutes
-        self.totalMonitoringMinutes = totalMonitoringMinutes
     }
 }
 
