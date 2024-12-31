@@ -78,6 +78,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		FAC59A7A2D239B2200451984 /* Exceptions for "ScreenBreakers" folder in "ScreenBreakers" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = FA4B88E82D1E1B19007A5B6E /* ScreenBreakers */;
+		};
 		FAED17A92D21BBFE006BE0B8 /* Exceptions for "MonitorExt" folder in "MonitorExt" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -114,6 +121,9 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FA4B88EB2D1E1B19007A5B6E /* ScreenBreakers */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FAC59A7A2D239B2200451984 /* Exceptions for "ScreenBreakers" folder in "ScreenBreakers" target */,
+			);
 			path = ScreenBreakers;
 			sourceTree = "<group>";
 		};
@@ -609,6 +619,7 @@
 				DEVELOPMENT_TEAM = 8N2Z544SB4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ScreenBreakers/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -638,6 +649,7 @@
 				DEVELOPMENT_TEAM = 8N2Z544SB4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ScreenBreakers/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

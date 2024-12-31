@@ -9,17 +9,19 @@ import SwiftUI
 import SwiftData
 
 @main
-struct UsageMonitorApp: App {
+struct ScreenBreakersApp: App {
     let container: ModelContainer
-
+    @StateObject private var deepLinkManager = DeepLinkManager()
+    
     init() {
         container = SharedContainer.makeConfiguration()
     }
-
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(deepLinkManager)
+                .modelContainer(container)
         }
-        .modelContainer(container)
     }
 }

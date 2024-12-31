@@ -31,8 +31,11 @@ struct ModelConfigurationManager {
 struct ContentView: View {
     @StateObject private var manager = ScreenTimeManager()
     @StateObject private var viewModel = LeaderboardViewModel()
+    @EnvironmentObject private var deepLinkManager: DeepLinkManager
     @State private var isEditingLeaderboardName = false
     @State private var isEditingPlayerName = false
+    @State private var isShowingShareSheet = false
+    @State private var showJoinError = false
     
     var body: some View {
         NavigationStack {
@@ -54,7 +57,12 @@ struct ContentView: View {
                         }
                         
                         Button(action: {
-                            // Share functionality will be added later
+                            Task {
+                                await viewModel.shareLeaderboard()
+                                if viewModel.shareURL != nil {
+                                    isShowingShareSheet = true
+                                }
+                            }
                         }) {
                             Image(systemName: "square.and.arrow.up")
                                 .font(.system(size: 24))
@@ -65,10 +73,28 @@ struct ContentView: View {
                 .padding()
                 .background(Color(.systemBackground))
                 
-                LeaderboardView(
-                    viewModel: viewModel,
-                    isEditingLeaderboardName: $isEditingLeaderboardName
-                )
+                if viewModel.currentLeaderboard == nil {
+                    // Empty state
+                    VStack(spacing: 20) {
+                        Spacer()
+                        Image(systemName: "person.3.fill")
+                            .font(.system(size: 60))
+                            .foregroundColor(.gray)
+                        Text("Share to Start a Leaderboard")
+                            .font(.title2)
+                            .foregroundColor(.gray)
+                        Text("Tap the share button above to create a leaderboard\nand invite your friends!")
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.gray)
+                        Spacer()
+                    }
+                    .padding()
+                } else {
+                    LeaderboardView(
+                        viewModel: viewModel,
+                        isEditingLeaderboardName: $isEditingLeaderboardName
+                    )
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -86,6 +112,16 @@ struct ContentView: View {
                 }
             }
         }
+        .sheet(isPresented: $isShowingShareSheet) {
+            if let shareURL = viewModel.shareURL {
+                ShareSheet(activityItems: [shareURL])
+            }
+        }
+        .alert("Couldn't Join Leaderboard", isPresented: $showJoinError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("The leaderboard you're trying to join doesn't exist or is no longer available.")
+        }
         .familyActivityPicker(isPresented: $manager.isPickerPresented,
                             selection: $manager.activitySelection)
         .onChange(of: manager.activitySelection) { newValue in
@@ -95,6 +131,19 @@ struct ContentView: View {
             sharedDefaults?.set(encoded, forKey: "activitySelection")
             if AuthorizationCenter.shared.authorizationStatus == .approved {
                 manager.startMonitoringOneMinuteThreshold()
+            }
+        }
+        .onChange(of: deepLinkManager.pendingLeaderboardId) { leaderboardId in
+            guard let leaderboardId = leaderboardId else { return }
+            
+            // Clear the pending ID immediately to prevent duplicate joins
+            deepLinkManager.pendingLeaderboardId = nil
+            
+            // Attempt to join the leaderboard
+            Task {
+                if await viewModel.joinLeaderboard(withId: leaderboardId) == nil {
+                    showJoinError = true
+                }
             }
         }
         .onAppear {
@@ -111,7 +160,20 @@ struct ContentView: View {
                 }
             }
         }
+        .onOpenURL { url in
+            deepLinkManager.handleDeepLink(url)
+        }
     }
+}
+
+struct ShareSheet: UIViewControllerRepresentable {
+    let activityItems: [Any]
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 struct ContentView_Previews: PreviewProvider {
