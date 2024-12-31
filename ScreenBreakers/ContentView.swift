@@ -50,46 +50,6 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Header with controls
-                HStack {
-                    // Player/Leaderboard name with edit button
-                    if viewModel.currentLeaderboard != nil {
-                        HStack {
-                            Text(viewModel.leaderboardName)
-                                .font(.title2)
-                                .fontWeight(.bold)
-                            
-                            Button(action: {
-                                isEditingLeaderboardName = true
-                            }) {
-                                Image(systemName: "pencil")
-                                    .foregroundColor(.blue)
-                            }
-                        }
-                    }
-                    
-                    Spacer()
-                    
-                    // Share button
-                    Button(action: {
-                        print("📱 Share button tapped")
-                        Task {
-                            print("📱 Starting share task")
-                            await viewModel.shareLeaderboard()
-                            print("📱 Share completed, URL: \(String(describing: viewModel.shareURL))")
-                            if viewModel.shareURL != nil {
-                                print("📱 Setting isShowingShareSheet to true")
-                                isShowingShareSheet = true
-                            }
-                        }
-                    }) {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(.title2)
-                    }
-                }
-                .padding()
-                .background(Color(.systemBackground))
-                
                 if !manager.isAuthorized {
                     PrivacyExplanationView(
                         isMonitoring: .init(
@@ -107,96 +67,33 @@ struct ContentView: View {
                         )
                     )
                 } else if viewModel.currentLeaderboard == nil {
-                    // Show current player's stats
-                    LeaderboardRow(
-                        rank: 1,
-                        playerName: viewModel.playerName,
-                        minutes: todayMinutes,
-                        isAlternate: false,
-                        showEditButton: true,
-                        onEdit: { isEditingPlayerName = true }
+                    PlayerStatsView(
+                        isEditingPlayerName: $isEditingPlayerName,
+                        playerName: $viewModel.playerName,
+                        isMonitoring: .constant(manager.isAuthorized),
+                        isShowingShareSheet: $isShowingShareSheet,
+                        todayMinutes: todayMinutes,
+                        onShare: {
+                            await viewModel.shareLeaderboard()
+                        }
                     )
-                    .padding(.top)
-                    
-                    Spacer()
-                    
-                    // Empty state message
-                    VStack(spacing: 16) {
-                        Image(systemName: "person.3.fill")
-                            .font(.system(size: 60))
-                            .foregroundColor(.gray)
-                        Text("Share to Start a Leaderboard")
-                            .font(.title2)
-                            .foregroundColor(.gray)
-                        Text("Tap the share button to create a leaderboard\nand invite your friends!")
-                            .multilineTextAlignment(.center)
-                            .foregroundColor(.gray)
-                        
-                        Button(action: {
-                            Task {
-                                await viewModel.shareLeaderboard()
-                                if viewModel.shareURL != nil {
-                                    isShowingShareSheet = true
-                                }
-                            }
-                        }) {
-                            HStack {
-                                Image(systemName: "square.and.arrow.up")
-                                Text("Share")
-                            }
-                            .font(.title2)
-                            .foregroundColor(.blue)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color(.systemBackground))
-                            .cornerRadius(10)
-                        }
-                        .padding(.top, 8)
-                    }
-                    .padding()
-                    
-                    Spacer()
                 } else {
-                    // Leaderboard list
-                    ScrollView {
-                        VStack(spacing: 0) {
-                            ForEach(Array(viewModel.currentLeaderboard!.players.enumerated()), id: \.element.id) { index, player in
-                                let isCurrentUser = player.id == viewModel.userId
-                                LeaderboardRow(
-                                    rank: index + 1,
-                                    playerName: player.name,
-                                    minutes: isCurrentUser ? todayMinutes : player.minutes,
-                                    isAlternate: index % 2 == 1,
-                                    showEditButton: isCurrentUser,
-                                    onEdit: isCurrentUser ? { isEditingPlayerName = true } : nil
-                                )
-                            }
-                        }
-                        .background(Color(.systemBackground))
-                    }
+                    LeaderboardView(
+                        viewModel: viewModel,
+                        isEditingLeaderboardName: $isEditingLeaderboardName,
+                        isEditingPlayerName: $isEditingPlayerName,
+                        isMonitoring: .constant(manager.isAuthorized)
+                    )
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
+            .background(Color(.systemBackground))
         }
         .sheet(isPresented: $isShowingShareSheet) {
             if let shareURL = viewModel.shareURL {
                 ShareSheet(activityItems: [shareURL])
                     .presentationDetents([.medium])
             }
-        }
-        .sheet(isPresented: $isEditingLeaderboardName) {
-            NameEditSheet(
-                isPresented: $isEditingLeaderboardName,
-                name: $viewModel.leaderboardName,
-                title: "Edit Leaderboard Name"
-            )
-        }
-        .sheet(isPresented: $isEditingPlayerName) {
-            NameEditSheet(
-                isPresented: $isEditingPlayerName,
-                name: $viewModel.playerName,
-                title: "Edit Your Name"
-            )
         }
         .alert("Couldn't Join Leaderboard", isPresented: $showJoinError) {
             Button("OK", role: .cancel) { }

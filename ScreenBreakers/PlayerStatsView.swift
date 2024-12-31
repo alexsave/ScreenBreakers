@@ -9,24 +9,22 @@ struct PlayerStatsView: View {
     let onShare: () async -> Void
     
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 0) {
             // Header with all controls
-            HStack {
-                // Player name with edit button
-                HStack {
+            HStack(spacing: 16) {
+                // Title with edit button
+                HStack(spacing: 4) {
                     Text(playerName)
                         .font(.title2)
                         .fontWeight(.bold)
+                        .lineLimit(1)
                     
-                    Button(action: {
-                        isEditingPlayerName = true
-                    }) {
+                    Button(action: { isEditingPlayerName = true }) {
                         Image(systemName: "pencil")
                             .foregroundColor(.blue)
                     }
                 }
-                
-                Spacer()
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 // Share button
                 Button(action: {
@@ -39,54 +37,61 @@ struct PlayerStatsView: View {
                         .font(.title2)
                 }
             }
-            .padding()
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(height: 56)
             .background(Color(.systemBackground))
             
-            // Show current player's stats
-            LeaderboardRow(
-                rank: 1,
-                playerName: playerName,
-                minutes: todayMinutes,
-                isAlternate: false,
-                showEditButton: true,
-                onEdit: { isEditingPlayerName = true }
-            )
-            
-            Spacer()
-            
-            // Empty state message
-            VStack(spacing: 16) {
-                Image(systemName: "person.3.fill")
-                    .font(.system(size: 60))
-                    .foregroundColor(.gray)
-                Text("Share to Start a Leaderboard")
-                    .font(.title2)
-                    .foregroundColor(.gray)
-                Text("Tap the share button to create a leaderboard\nand invite your friends!")
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(.gray)
-                
-                Button(action: {
-                    Task {
-                        await onShare()
-                        isShowingShareSheet = true
+            ScrollView {
+                VStack(spacing: 0) {
+                    LeaderboardRow(
+                        rank: 1,
+                        playerName: playerName,
+                        minutes: todayMinutes,
+                        isAlternate: false,
+                        showEditButton: true,
+                        onEdit: { isEditingPlayerName = true }
+                    )
+                    
+                    VStack(spacing: 16) {
+                        Spacer()
+                            .frame(height: 40)
+                        
+                        Image(systemName: "person.3.fill")
+                            .font(.system(size: 60))
+                            .foregroundColor(.gray)
+                        Text("Share to Start a Leaderboard")
+                            .font(.title2)
+                            .foregroundColor(.gray)
+                        Text("Tap the share button to create a leaderboard\nand invite your friends!")
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.gray)
+                        
+                        Button(action: {
+                            Task {
+                                await onShare()
+                                isShowingShareSheet = true
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "square.and.arrow.up")
+                                Text("Share")
+                            }
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color(.systemBackground))
+                            .cornerRadius(10)
+                        }
+                        .padding(.top, 8)
+                        
+                        Spacer()
                     }
-                }) {
-                    HStack {
-                        Image(systemName: "square.and.arrow.up")
-                        Text("Share")
-                    }
-                    .font(.title2)
-                    .foregroundColor(.blue)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color(.systemBackground))
-                    .cornerRadius(10)
                 }
-                .padding(.top, 8)
+                .padding(.horizontal, 16)
             }
-            
-            Spacer()
+            .background(Color(.systemBackground))
         }
         .sheet(isPresented: $isEditingPlayerName) {
             NameEditSheet(

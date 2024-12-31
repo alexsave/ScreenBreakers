@@ -18,24 +18,22 @@ struct LeaderboardView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Header with all controls
-            HStack {
-                // Leaderboard name with edit button
-                if let leaderboard = viewModel.currentLeaderboard {
-                    HStack {
-                        Text(viewModel.leaderboardName)
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        
-                        Button(action: {
-                            isEditingLeaderboardName = true
-                        }) {
+            HStack(spacing: 16) {
+                // Title with edit button
+                HStack(spacing: 4) {
+                    Text(viewModel.leaderboardName)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .lineLimit(1)
+                    
+                    if viewModel.currentLeaderboard != nil {
+                        Button(action: { isEditingLeaderboardName = true }) {
                             Image(systemName: "pencil")
                                 .foregroundColor(.blue)
                         }
                     }
                 }
-                
-                Spacer()
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 // Share button
                 Button(action: {
@@ -47,10 +45,11 @@ struct LeaderboardView: View {
                         .font(.title2)
                 }
             }
-            .padding()
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(height: 56)
             .background(Color(.systemBackground))
             
-            // Leaderboard list
             ScrollView {
                 VStack(spacing: 0) {
                     if let leaderboard = viewModel.currentLeaderboard {
@@ -67,8 +66,9 @@ struct LeaderboardView: View {
                         }
                     }
                 }
-                .background(Color(.systemBackground))
+                .padding(.horizontal, 16)
             }
+            .background(Color(.systemBackground))
         }
         .sheet(isPresented: $isEditingLeaderboardName) {
             NameEditSheet(
