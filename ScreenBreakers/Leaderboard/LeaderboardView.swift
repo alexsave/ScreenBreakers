@@ -6,6 +6,7 @@ struct LeaderboardView: View {
     @ObservedObject var viewModel: LeaderboardViewModel
     @Binding var isEditingLeaderboardName: Bool
     @Binding var isEditingPlayerName: Bool
+    @Binding var isMonitoring: Bool
     
     private var todayMinutes: Int {
         let today = Calendar.current.startOfDay(for: Date())
@@ -16,21 +17,35 @@ struct LeaderboardView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header with buttons
+            // Header with all controls
             HStack {
-                if isEditingLeaderboardName {
-                    TextField("Leaderboard Name", text: $viewModel.leaderboardName)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal)
-                        .onSubmit { isEditingLeaderboardName = false }
-                } else {
-                    Text(viewModel.leaderboardName)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .onTapGesture { isEditingLeaderboardName = true }
+                // Leaderboard name with edit button
+                if let leaderboard = viewModel.currentLeaderboard {
+                    HStack {
+                        Text(viewModel.leaderboardName)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        
+                        Button(action: {
+                            isEditingLeaderboardName = true
+                        }) {
+                            Image(systemName: "pencil")
+                                .foregroundColor(.blue)
+                        }
+                    }
                 }
                 
                 Spacer()
+                
+                // Share button
+                Button(action: {
+                    Task {
+                        await viewModel.shareLeaderboard()
+                    }
+                }) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.title2)
+                }
             }
             .padding()
             .background(Color(.systemBackground))
@@ -55,8 +70,19 @@ struct LeaderboardView: View {
                 .background(Color(.systemBackground))
             }
         }
+        .sheet(isPresented: $isEditingLeaderboardName) {
+            NameEditSheet(
+                isPresented: $isEditingLeaderboardName,
+                name: $viewModel.leaderboardName,
+                title: "Edit Leaderboard Name"
+            )
+        }
         .sheet(isPresented: $isEditingPlayerName) {
-            PlayerNameEditor(isEditingPlayerName: $isEditingPlayerName, playerName: $viewModel.playerName)
+            NameEditSheet(
+                isPresented: $isEditingPlayerName,
+                name: $viewModel.playerName,
+                title: "Edit Your Name"
+            )
         }
     }
 } 

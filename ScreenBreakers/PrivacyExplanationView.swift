@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct PrivacyExplanationView: View {
+    @Binding var isMonitoring: Bool
+    
     var body: some View {
         VStack(spacing: 24) {
             Spacer()
@@ -39,9 +41,18 @@ struct PrivacyExplanationView: View {
             }
             .foregroundColor(.gray)
             
-            Text("Tap the play button above to get started")
-                .foregroundColor(.green)
-                .fontWeight(.medium)
+            Button(action: {
+                isMonitoring.toggle()
+            }) {
+                HStack {
+                    Image(systemName: isMonitoring ? "record.circle.fill" : "record.circle")
+                        .foregroundColor(.red)
+                    Text("Start Tracking")
+                        .foregroundColor(.red)
+                }
+                .font(.title2)
+            }
+            .padding(.top)
             
             Spacer()
         }
@@ -56,8 +67,7 @@ struct PrivacyBulletPoint: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .foregroundColor(.blue)
-                .frame(width: 20)
+                .frame(width: 24)
             Text(text)
         }
     }
