@@ -64,10 +64,22 @@ class LeaderboardViewModel: ObservableObject {
         }
         
         // If we have a leaderboard ID, fetch it
-        if let leaderboardId = self.leaderboardId {
+        if /*false {*/let leaderboardId = self.leaderboardId {
             Task {
                 await fetchLeaderboard()
             }
+        } else {
+            // Add dummy users for testing
+            self.currentLeaderboard = LeaderboardData(
+                id: "dummy",
+                name: leaderboardName,
+                players: [
+                    (id: "1", name: "Alice", minutes: 120),
+                    (id: "2", name: "Bob", minutes: 90),
+                    (id: "3", name: "Charlie", minutes: 60),
+                    (id: self.userId ?? "", name: playerName, minutes: 0)
+                ]
+            )
         }
     }
     

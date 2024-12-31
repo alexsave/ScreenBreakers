@@ -5,6 +5,7 @@ struct LeaderboardView: View {
     @Query private var dailyActivities: [DailyActivity]
     @ObservedObject var viewModel: LeaderboardViewModel
     @Binding var isEditingLeaderboardName: Bool
+    @Binding var isEditingPlayerName: Bool
     
     private var todayMinutes: Int {
         let today = Calendar.current.startOfDay(for: Date())
@@ -43,14 +44,19 @@ struct LeaderboardView: View {
                             LeaderboardRow(
                                 rank: index + 1,
                                 playerName: player.name,
-                                minutes: isCurrentUser ? todayMinutes : 0,
-                                isAlternate: index % 2 == 1
+                                minutes: isCurrentUser ? todayMinutes : player.minutes,
+                                isAlternate: index % 2 == 1,
+                                showEditButton: isCurrentUser,
+                                onEdit: isCurrentUser ? { isEditingPlayerName = true } : nil
                             )
                         }
                     }
                 }
                 .background(Color(.systemBackground))
             }
+        }
+        .sheet(isPresented: $isEditingPlayerName) {
+            PlayerNameEditor(isEditingPlayerName: $isEditingPlayerName, playerName: $viewModel.playerName)
         }
     }
 } 

@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct PlayerStatsView: View {
-    let playerName: String
+    @Binding var isEditingPlayerName: Bool
+    @Binding var playerName: String
     let todayMinutes: Int
     
     var body: some View {
@@ -11,9 +12,10 @@ struct PlayerStatsView: View {
                 rank: 1,
                 playerName: playerName,
                 minutes: todayMinutes,
-                isAlternate: false
+                isAlternate: false,
+                showEditButton: true,
+                onEdit: { isEditingPlayerName = true }
             )
-            .padding(.horizontal)
             
             Spacer()
             
@@ -33,5 +35,8 @@ struct PlayerStatsView: View {
             Spacer()
         }
         .padding()
+        .sheet(isPresented: $isEditingPlayerName) {
+            PlayerNameEditor(isEditingPlayerName: $isEditingPlayerName, playerName: $playerName)
+        }
     }
 } 

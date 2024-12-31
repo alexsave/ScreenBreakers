@@ -3,6 +3,8 @@ import SwiftData
 import FamilyControls
 import Foundation
 
+// Import the new components
+
 struct ModelConfigurationManager {
     private static var container: ModelContainer?
     
@@ -53,20 +55,16 @@ struct ContentView: View {
                 if !manager.isAuthorized {
                     PrivacyExplanationView()
                 } else if viewModel.currentLeaderboard == nil {
-                    PlayerStatsView(playerName: viewModel.playerName, todayMinutes: todayMinutes)
+                    PlayerStatsView(isEditingPlayerName: $isEditingPlayerName, playerName: $viewModel.playerName, todayMinutes: todayMinutes)
                 } else {
                     LeaderboardView(
                         viewModel: viewModel,
-                        isEditingLeaderboardName: $isEditingLeaderboardName
+                        isEditingLeaderboardName: $isEditingLeaderboardName,
+                        isEditingPlayerName: $isEditingPlayerName
                     )
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    PlayerNameEditor(isEditingPlayerName: $isEditingPlayerName, playerName: $viewModel.playerName)
-                }
-            }
         }
         .sheet(isPresented: $isShowingShareSheet) {
             if let shareURL = viewModel.shareURL {
