@@ -28,41 +28,34 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
     
     /// Updates the accumulated usage in the shared SwiftData database
     private func updateAccumulatedUsage() async {
-        //await MainActor.run {
-            do {
-                let today = Calendar.current.startOfDay(for: Date())
-                let fetchDescriptor = FetchDescriptor<DailyActivity>(
-                    predicate: #Predicate { $0.date == today }
-                )
-                
-                let container = try SharedContainer.makeConfiguration()
-
-                if container == nil{
-                    os_log("model context is nil")
-                    return
-                }
-                let context = container.mainContext
-                
-                let existingData = try context.fetch(fetchDescriptor).first
-                if let data = existingData {
-                    data.totalScreenMinutes += 1
-                    os_log("Updated accumulated usage to: %f minutes", data.totalScreenMinutes)
-                } else {
-                    // must be new
-                    let newData = DailyActivity(date: today, totalScreenMinutes: 1)
-                    context.insert(newData)
-                    os_log("Created new activity record with 1 minute.")
-                }
-                //} catch {
-                //os_log("fetch error \(error)")
-                //}
-                
-                // Save the changes to the SwiftData store
-                try context.save()
-            } catch {
-                os_log("Failed to update accumulated usage: %{public}@", "\(error)")
+        do {
+            let today = Calendar.current.startOfDay(for: Date())
+            let fetchDescriptor = FetchDescriptor<DailyActivity>(
+                predicate: #Predicate { $0.date == today }
+            )
+            
+            let container = try SharedContainer.makeConfiguration()
+            
+            if container == nil{
+                os_log("model context is nil")
+                return
             }
-        //}
+            let context = container.mainContext
+            
+            let existingData = try context.fetch(fetchDescriptor).first
+            if let data = existingData {
+                data.totalScreenMinutes += 1
+                os_log("Updated accumulated usage to: %f minutes", data.totalScreenMinutes)
+            } else {
+                // must be new
+                let newData = DailyActivity(date: today, totalScreenMinutes: 1)
+                context.insert(newData)
+                os_log("Created new activity record with 1 minute.")
+            }
+            try context.save()
+        } catch {
+            os_log("Failed to update accumulated usage: %{public}@", "\(error)")
+        }
     }
     
     /// Rearms the 1-minute threshold by stopping and restarting monitoring
