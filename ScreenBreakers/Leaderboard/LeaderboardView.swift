@@ -6,6 +6,13 @@ struct LeaderboardView: View {
     @ObservedObject var viewModel: LeaderboardViewModel
     @Binding var isEditingLeaderboardName: Bool
     
+    private var todayMinutes: Int {
+        let today = Calendar.current.startOfDay(for: Date())
+        return dailyActivities
+            .first { Calendar.current.startOfDay(for: $0.date) == today }
+            .map { Int($0.totalScreenMinutes) } ?? 0
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             // Header with buttons
@@ -30,13 +37,16 @@ struct LeaderboardView: View {
             // Leaderboard list
             ScrollView {
                 VStack(spacing: 0) {
-                    ForEach(Array(dailyActivities.enumerated()), id: \.element.id) { index, activity in
-                        LeaderboardRow(
-                            rank: index + 1,
-                            playerName: viewModel.playerName,
-                            minutes: Int(activity.totalScreenMinutes),
-                            isAlternate: index % 2 == 1
-                        )
+                    if let leaderboard = viewModel.currentLeaderboard {
+                        ForEach(Array(leaderboard.players.enumerated()), id: \.element.id) { index, player in
+                            let isCurrentUser = player.id == viewModel.userId
+                            LeaderboardRow(
+                                rank: index + 1,
+                                playerName: player.name,
+                                minutes: isCurrentUser ? todayMinutes : 0,
+                                isAlternate: index % 2 == 1
+                            )
+                        }
                     }
                 }
                 .background(Color(.systemBackground))

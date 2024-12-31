@@ -29,6 +29,7 @@ struct ModelConfigurationManager {
 }
 
 struct ContentView: View {
+    @Query private var dailyActivities: [DailyActivity]
     @StateObject private var manager = ScreenTimeManager()
     @StateObject private var viewModel = LeaderboardViewModel()
     @EnvironmentObject private var deepLinkManager: DeepLinkManager
@@ -36,6 +37,13 @@ struct ContentView: View {
     @State private var isEditingPlayerName = false
     @State private var isShowingShareSheet = false
     @State private var showJoinError = false
+    
+    private var todayMinutes: Int {
+        let today = Calendar.current.startOfDay(for: Date())
+        return dailyActivities
+            .first { Calendar.current.startOfDay(for: $0.date) == today }
+            .map { Int($0.totalScreenMinutes) } ?? 0
+    }
     
     var body: some View {
         NavigationStack {
@@ -74,18 +82,31 @@ struct ContentView: View {
                 .background(Color(.systemBackground))
                 
                 if viewModel.currentLeaderboard == nil {
-                    // Empty state
                     VStack(spacing: 20) {
+                        // Show current player's stats
+                        LeaderboardRow(
+                            rank: 1,
+                            playerName: viewModel.playerName,
+                            minutes: todayMinutes,
+                            isAlternate: false
+                        )
+                        .padding(.horizontal)
+                        
                         Spacer()
-                        Image(systemName: "person.3.fill")
-                            .font(.system(size: 60))
-                            .foregroundColor(.gray)
-                        Text("Share to Start a Leaderboard")
-                            .font(.title2)
-                            .foregroundColor(.gray)
-                        Text("Tap the share button above to create a leaderboard\nand invite your friends!")
-                            .multilineTextAlignment(.center)
-                            .foregroundColor(.gray)
+                        
+                        // Empty state message
+                        VStack(spacing: 16) {
+                            Image(systemName: "person.3.fill")
+                                .font(.system(size: 60))
+                                .foregroundColor(.gray)
+                            Text("Share to Start a Leaderboard")
+                                .font(.title2)
+                                .foregroundColor(.gray)
+                            Text("Tap the share button above to create a leaderboard\nand invite your friends!")
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.gray)
+                        }
+                        
                         Spacer()
                     }
                     .padding()

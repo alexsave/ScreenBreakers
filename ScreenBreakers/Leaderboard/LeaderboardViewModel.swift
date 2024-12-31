@@ -28,7 +28,7 @@ class LeaderboardViewModel: ObservableObject {
     @Published var currentLeaderboard: LeaderboardData?
     @Published var shareURL: URL?
     
-    private(set) var userId: String? {
+    var userId: String? {
         didSet {
             if let userId = userId {
                 defaults.set(userId, forKey: userIdKey)
@@ -72,7 +72,7 @@ class LeaderboardViewModel: ObservableObject {
     }
     
     func handleDeepLink(_ url: URL) {
-        guard url.scheme == "app",
+        guard url.scheme == "screenbreakers",
               let leaderboardId = url.host else {
             print("Invalid deep link format")
             return
@@ -105,7 +105,7 @@ class LeaderboardViewModel: ObservableObject {
         }
         
         if let leaderboardId = leaderboardId {
-            shareURL = URL(string: "app://\(leaderboardId)")
+            shareURL = URL(string: "screenbreakers://\(leaderboardId)")
         }
     }
     
