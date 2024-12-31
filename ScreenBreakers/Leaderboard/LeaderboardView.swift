@@ -15,6 +15,22 @@ struct LeaderboardView: View {
             .map { Int($0.totalScreenMinutes) } ?? 0
     }
     
+    private var currentUserId: String? {
+        viewModel.supabase.currentUserId?.uuidString
+    }
+    
+    private func makeLeaderboardRow(index: Int, player: (id: String, name: String, minutes: Int)) -> some View {
+        let isCurrentUser = player.id == currentUserId
+        return LeaderboardRow(
+            rank: index + 1,
+            playerName: player.name,
+            minutes: isCurrentUser ? todayMinutes : player.minutes,
+            isAlternate: index % 2 == 1,
+            showEditButton: isCurrentUser,
+            onEdit: isCurrentUser ? { isEditingPlayerName = true } : nil
+        )
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             // Header with all controls
@@ -54,15 +70,7 @@ struct LeaderboardView: View {
                 VStack(spacing: 0) {
                     if let leaderboard = viewModel.currentLeaderboard {
                         ForEach(Array(leaderboard.players.enumerated()), id: \.element.id) { index, player in
-                            let isCurrentUser = player.id == viewModel.userId
-                            LeaderboardRow(
-                                rank: index + 1,
-                                playerName: player.name,
-                                minutes: isCurrentUser ? todayMinutes : player.minutes,
-                                isAlternate: index % 2 == 1,
-                                showEditButton: isCurrentUser,
-                                onEdit: isCurrentUser ? { isEditingPlayerName = true } : nil
-                            )
+                            makeLeaderboardRow(index: index, player: player)
                         }
                     }
                 }

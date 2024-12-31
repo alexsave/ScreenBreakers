@@ -97,7 +97,7 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $isShowingPrivacyExplanation) {
-            PrivacyExplanationView(isPresented: $isShowingPrivacyExplanation)
+            PrivacyExplanationView(isMonitoring: $isShowingPrivacyExplanation)
         }
         .onAppear {
             if !screenTimeManager.isAuthorized {

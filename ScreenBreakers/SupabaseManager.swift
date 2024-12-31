@@ -15,38 +15,67 @@ class SupabaseManager: ObservableObject {
             supabaseURL: URL(string: SupabaseConfig.url)!,
             supabaseKey: SupabaseConfig.anonKey
         )
+        
+        // Try to restore existing session or create anonymous user
+        Task {
+            await signInAnonymously()
+        }
+    }
+    
+    private func signInAnonymously() async {
+        do {
+            // Try to restore existing session first
+            if let session = try? await client.auth.session {
+                self.currentUserId = session.user.id
+                
+                // Fetch current leaderboard ID
+                if let user: User = try? await client
+                    .from("users")
+                    .select()
+                    .eq("id", value: session.user.id)
+                    .single()
+                    .execute()
+                    .value {
+                    self.currentLeaderboardId = user.currentLeaderboardId
+                }
+                return
+            }
+            
+            // If no session exists, sign in anonymously
+            let response = try await client.auth.signInAnonymously()
+            self.currentUserId = response.user.id
+            
+            // Create initial user record
+            try await createOrUpdateUser(name: "Player 1")
+        } catch {
+            print("Failed to sign in anonymously: \(error)")
+        }
     }
     
     // MARK: - User Management
     
     func createOrUpdateUser(name: String) async throws -> UUID {
-        if let userId = currentUserId {
-            // Update existing user
-            try await client.database
-                .from("users")
-                .update(["name": name])
-                .eq("id", value: userId)
-                .execute()
-            return userId
-        } else {
-            // Create new user
-            let response: [User] = try await client.database
-                .from("users")
-                .insert(["name": name])
-                .select()
-                .execute()
-                .value
-            
-            guard let newUser = response.first,
-                  let userId = newUser.id else {
-                throw NSError(domain: "SupabaseError", code: 500, userInfo: [
-                    NSLocalizedDescriptionKey: "Failed to create user"
-                ])
-            }
-            
-            currentUserId = userId
-            return userId
+        // If not authenticated, try to sign in
+        if currentUserId == nil {
+            await signInAnonymously()
         }
+        
+        guard let userId = currentUserId else {
+            throw NSError(domain: "SupabaseError", code: 401, userInfo: [
+                NSLocalizedDescriptionKey: "Not authenticated"
+            ])
+        }
+        
+        // Try to create/update user
+        try await client
+            .from("users")
+            .upsert([
+                "id": userId.uuidString,
+                "name": name
+            ])
+            .execute()
+        
+        return userId
     }
     
     func updateDailyUsage(minutes: Int) async throws {
@@ -59,8 +88,8 @@ class SupabaseManager: ObservableObject {
         let calendar = Calendar.current
         let day = calendar.component(.day, from: Date())
         
-        try await client.database.rpc(
-            fn: "update_daily_usage",
+        try await client.rpc(
+            "update_daily_usage",
             params: UpdateDailyUsageParams(
                 p_user_id: userId,
                 p_day: day,
@@ -82,16 +111,19 @@ class SupabaseManager: ObservableObject {
         let leaderboardId = String(UUID().uuidString.prefix(7))
         
         // Create leaderboard
-        try await client.database
+        try await client
             .from("leaderboards")
-            .insert(["id": leaderboardId, "name": name])
+            .insert([
+                "id": leaderboardId,
+                "name": name
+            ])
             .execute()
         
         // Update user's current leaderboard
-        try await client.database
+        try await client
             .from("users")
             .update(["current_leaderboard_id": leaderboardId])
-            .eq("id", value: userId)
+            .eq("id", value: userId.uuidString)
             .execute()
         
         currentLeaderboardId = leaderboardId
@@ -106,7 +138,7 @@ class SupabaseManager: ObservableObject {
         }
         
         // Verify leaderboard exists
-        let leaderboards: [Leaderboard] = try await client.database
+        let leaderboards: [Leaderboard] = try await client
             .from("leaderboards")
             .select()
             .eq("id", value: id)
@@ -120,10 +152,10 @@ class SupabaseManager: ObservableObject {
         }
         
         // Update user's current leaderboard
-        try await client.database
+        try await client
             .from("users")
             .update(["current_leaderboard_id": id])
-            .eq("id", value: userId)
+            .eq("id", value: userId.uuidString)
             .execute()
         
         currentLeaderboardId = id
@@ -136,13 +168,21 @@ class SupabaseManager: ObservableObject {
             ])
         }
         
-        return try await client.database
+        return try await client
             .rpc(
-                fn: "get_leaderboard_data",
+                "get_leaderboard_data",
                 params: GetLeaderboardDataParams(p_leaderboard_id: leaderboardId)
             )
             .execute()
             .value
+    }
+    
+    func updateLeaderboardName(leaderboardId: String, newName: String) async throws {
+        try await client
+            .from("leaderboards")
+            .update(["name": newName])
+            .eq("id", value: leaderboardId)
+            .execute()
     }
 }
 

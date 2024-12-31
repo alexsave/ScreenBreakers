@@ -1,11 +1,5 @@
 import Foundation
 
-struct LeaderboardData {
-    let id: String
-    var name: String
-    var players: [(id: String, name: String, minutes: Int)]
-}
-
 actor MockLeaderboardServer {
     static let shared = MockLeaderboardServer()
     private var leaderboards: [String: LeaderboardData] = [:]

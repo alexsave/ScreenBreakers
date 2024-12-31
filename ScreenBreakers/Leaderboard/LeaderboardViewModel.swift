@@ -1,33 +1,30 @@
 import SwiftUI
 
+// Helper struct to maintain compatibility with existing views
+public struct LeaderboardData {
+    let id: String
+    var name: String
+    var players: [(id: String, name: String, minutes: Int)]
+}
+
 @MainActor
 class LeaderboardViewModel: ObservableObject {
     private let defaults = UserDefaults.standard
     private let userNameKey = "user_name"
-    private let supabase = SupabaseManager.shared
+    let supabase = SupabaseManager.shared
     
-    @Published var leaderboardName: String {
+    @Published var leaderboardName: String = "" {
         didSet {
-            guard let leaderboardId = supabase.currentLeaderboardId else { return }
             Task {
-                do {
-                    try await supabase.updateLeaderboardName(leaderboardId: leaderboardId, newName: leaderboardName)
-                } catch {
-                    print("Failed to update leaderboard name: \(error)")
-                }
+                await updateLeaderboardName(leaderboardName)
             }
         }
     }
     
     @Published var playerName: String {
         didSet {
-            defaults.set(playerName, forKey: userNameKey)
             Task {
-                do {
-                    _ = try await supabase.createOrUpdateUser(name: playerName)
-                } catch {
-                    print("Failed to update player name: \(error)")
-                }
+                await updatePlayerName(playerName)
             }
         }
     }
@@ -36,9 +33,7 @@ class LeaderboardViewModel: ObservableObject {
     @Published var shareURL: URL?
     
     init() {
-        // Load existing values from UserDefaults
         self.playerName = defaults.string(forKey: userNameKey) ?? "Player 1"
-        self.leaderboardName = ""
         
         // Create initial user if needed
         Task {
@@ -50,15 +45,41 @@ class LeaderboardViewModel: ObservableObject {
         }
     }
     
+    private func updateLeaderboardName(_ newName: String) async {
+        guard let leaderboardId = supabase.currentLeaderboardId else { return }
+        do {
+            try await supabase.updateLeaderboardName(leaderboardId: leaderboardId, newName: newName)
+        } catch {
+            print("Failed to update leaderboard name: \(error)")
+        }
+    }
+    
+    private func updatePlayerName(_ newName: String) async {
+        defaults.set(newName, forKey: userNameKey)
+        do {
+            _ = try await supabase.createOrUpdateUser(name: newName)
+        } catch {
+            print("Failed to update player name: \(error)")
+        }
+    }
+    
     private func fetchLeaderboard() async {
         do {
             let members = try await supabase.getLeaderboardData()
+            let leaderboardId = supabase.currentLeaderboardId ?? ""
+            
+            let mappedPlayers = members.map { member in
+                (
+                    id: member.userId.uuidString,
+                    name: member.userName,
+                    minutes: member.todayMinutes
+                )
+            }
+            
             self.currentLeaderboard = LeaderboardData(
-                id: supabase.currentLeaderboardId ?? "",
+                id: leaderboardId,
                 name: leaderboardName,
-                players: members.map { member in
-                    (id: member.userId.uuidString, name: member.userName, minutes: member.todayMinutes)
-                }
+                players: mappedPlayers
             )
         } catch {
             print("Failed to fetch leaderboard: \(error)")
@@ -70,7 +91,6 @@ class LeaderboardViewModel: ObservableObject {
     func shareLeaderboard() async {
         print("📱 Starting shareLeaderboard")
         
-        // If we don't have a leaderboard yet, create one
         if currentLeaderboard == nil {
             print("📱 Creating new leaderboard")
             do {
@@ -103,16 +123,11 @@ class LeaderboardViewModel: ObservableObject {
     func updateScreenTime(minutes: Int) async {
         do {
             try await supabase.updateDailyUsage(minutes: minutes)
-            await fetchLeaderboard() // Refresh leaderboard data
+            if supabase.currentLeaderboardId != nil {
+                await fetchLeaderboard()
+            }
         } catch {
             print("Failed to update screen time: \(error)")
         }
     }
-}
-
-// Helper struct to maintain compatibility with existing views
-struct LeaderboardData {
-    let id: String
-    var name: String
-    var players: [(id: String, name: String, minutes: Int)]
 } 
