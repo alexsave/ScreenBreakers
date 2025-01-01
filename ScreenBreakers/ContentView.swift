@@ -89,33 +89,32 @@ struct ContentView: View {
                             ProgressView()
                                 .padding()
                         } else {
-                            // Always show current user's stats
-                            LeaderboardRow(
-                                rank: 1,
-                                playerName: leaderboardViewModel.playerName,
-                                minutes: todayMinutes,
-                                isAlternate: false,
-                                isCurrentUser: true,
-                                onEdit: { isEditingPlayerName = true }
-                            )
-                            .padding(.horizontal)
-                            
-                            // If we have a leaderboard, show other players
+                            // If we have a leaderboard, show all players
                             if let leaderboard = leaderboardViewModel.currentLeaderboard {
                                 ForEach(Array(leaderboard.players.enumerated()), id: \.1.id) { index, player in
-                                    if player.name != leaderboardViewModel.playerName {
-                                        LeaderboardRow(
-                                            rank: index + 1,
-                                            playerName: player.name,
-                                            minutes: player.minutes,
-                                            isAlternate: index % 2 == 1,
-                                            isCurrentUser: false
-                                        )
-                                        .padding(.horizontal)
-                                    }
+                                    LeaderboardRow(
+                                        rank: index + 1,
+                                        playerName: player.name,
+                                        minutes: player.name == leaderboardViewModel.playerName ? todayMinutes : player.minutes,
+                                        isAlternate: index % 2 == 1,
+                                        isCurrentUser: player.name == leaderboardViewModel.playerName,
+                                        onEdit: player.name == leaderboardViewModel.playerName ? { isEditingPlayerName = true } : nil
+                                    )
+                                    .padding(.horizontal)
                                 }
                             } else {
-                                // Show share prompt if not in a leaderboard
+                                // Show current user's stats if no leaderboard
+                                LeaderboardRow(
+                                    rank: 1,
+                                    playerName: leaderboardViewModel.playerName,
+                                    minutes: todayMinutes,
+                                    isAlternate: false,
+                                    isCurrentUser: true,
+                                    onEdit: { isEditingPlayerName = true }
+                                )
+                                .padding(.horizontal)
+                                
+                                // Show share prompt
                                 VStack(spacing: 16) {
                                     Image(systemName: "person.3.fill")
                                         .font(.system(size: 60))

@@ -29,6 +29,7 @@ class LeaderboardViewModel: ObservableObject {
         didSet {
             Task {
                 await updatePlayerName(playerName)
+                await fetchLeaderboard()
             }
         }
     }
@@ -89,7 +90,7 @@ class LeaderboardViewModel: ObservableObject {
         }
     }
     
-    private func fetchLeaderboard() async {
+    func fetchLeaderboard() async {
         print("📱 Fetching leaderboard data")
         do {
             let members = try await supabase.getLeaderboardData()
