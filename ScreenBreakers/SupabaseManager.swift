@@ -108,7 +108,7 @@ class SupabaseManager: ObservableObject {
         }
         
         // Generate a short unique ID for the leaderboard
-        let leaderboardId = String(UUID().uuidString.prefix(7))
+        let leaderboardId = String(UUID().uuidString.prefix(8))
         
         // Create leaderboard
         try await client

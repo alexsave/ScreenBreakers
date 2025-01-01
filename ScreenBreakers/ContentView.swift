@@ -31,78 +31,100 @@ struct ModelConfigurationManager {
 }
 
 struct ContentView: View {
-    @Environment(\.scenePhase) private var scenePhase
-    @Query private var dailyActivities: [DailyActivity]
-    @StateObject private var leaderboardViewModel = LeaderboardViewModel()
     @StateObject private var screenTimeManager = ScreenTimeManager()
-    @EnvironmentObject private var deepLinkManager: DeepLinkManager
-    
-    @State private var isEditingPlayerName = false
-    @State private var isEditingLeaderboardName = false
-    @State private var isShowingShareSheet = false
-    @State private var isShowingPrivacyExplanation = false
-    
-    private var todayMinutes: Int {
-        let today = Calendar.current.startOfDay(for: Date())
-        return dailyActivities
-            .first { Calendar.current.startOfDay(for: $0.date) == today }
-            .map { Int($0.totalScreenMinutes) } ?? 0
-    }
+    @StateObject private var leaderboardViewModel = LeaderboardViewModel()
+    @State private var isShareSheetPresented = false
     
     var body: some View {
-        TabView {
-            PlayerStatsView(
-                isEditingPlayerName: $isEditingPlayerName,
-                playerName: $leaderboardViewModel.playerName,
-                isMonitoring: .constant(screenTimeManager.isAuthorized),
-                isShowingShareSheet: $isShowingShareSheet,
-                todayMinutes: todayMinutes,
-                onShare: {
-                    await leaderboardViewModel.shareLeaderboard()
+        NavigationView {
+            VStack {
+                // Header
+                HStack {
+                    if !leaderboardViewModel.isLoadingLeaderboard {
+                        Text(leaderboardViewModel.leaderboardName)
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .padding(.leading)
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            Task {
+                                await leaderboardViewModel.shareLeaderboard()
+                                isShareSheetPresented = true
+                            }
+                        }) {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.title2)
+                        }
+                        .padding(.trailing)
+                    }
                 }
-            )
-            .tabItem {
-                Label("Stats", systemImage: "chart.bar.fill")
-            }
-            
-            LeaderboardView(
-                viewModel: leaderboardViewModel,
-                isEditingLeaderboardName: $isEditingLeaderboardName,
-                isEditingPlayerName: $isEditingPlayerName,
-                isMonitoring: .constant(screenTimeManager.isAuthorized)
-            )
-            .tabItem {
-                Label("Leaderboard", systemImage: "list.number")
+                .padding(.vertical)
+                
+                ScrollView {
+                    VStack(spacing: 16) {
+                        if !screenTimeManager.isAuthorized {
+                            PrivacyExplanationView(manager: screenTimeManager)
+                        } else if leaderboardViewModel.isLoadingLeaderboard {
+                            ProgressView()
+                                .padding()
+                        } else {
+                            // Always show current user's stats
+                            LeaderboardRow(
+                                rank: 1,
+                                playerName: leaderboardViewModel.playerName,
+                                minutes: 0,
+                                isAlternate: false
+                            )
+                            .padding(.horizontal)
+                            
+                            // If we have a leaderboard, show other players
+                            if let leaderboard = leaderboardViewModel.currentLeaderboard {
+                                ForEach(Array(leaderboard.players.enumerated()), id: \.1.id) { index, player in
+                                    if player.name != leaderboardViewModel.playerName {
+                                        LeaderboardRow(
+                                            rank: index + 1,
+                                            playerName: player.name,
+                                            minutes: player.minutes,
+                                            isAlternate: index % 2 == 1
+                                        )
+                                        .padding(.horizontal)
+                                    }
+                                }
+                            } else {
+                                // Show share prompt if not in a leaderboard
+                                VStack(spacing: 16) {
+                                    Image(systemName: "person.3.fill")
+                                        .font(.system(size: 60))
+                                        .foregroundColor(.gray)
+                                    Text("Share to Start a Leaderboard")
+                                        .font(.title2)
+                                        .foregroundColor(.gray)
+                                    Text("Tap the share button to create a leaderboard\nand invite your friends!")
+                                        .multilineTextAlignment(.center)
+                                        .foregroundColor(.gray)
+                                }
+                                .padding(.top, 32)
+                            }
+                        }
+                    }
+                }
             }
         }
-        .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active {
-                // Update Supabase with current screen time when app becomes active
-                Task {
-                    await leaderboardViewModel.updateScreenTime(minutes: todayMinutes)
-                }
-            }
-        }
-        .onChange(of: deepLinkManager.pendingLeaderboardId) { _, newId in
-            if let id = newId {
-                Task {
-                    await leaderboardViewModel.joinLeaderboard(withId: id)
-                    deepLinkManager.pendingLeaderboardId = nil
-                }
-            }
-        }
-        .sheet(isPresented: $isShowingShareSheet) {
+        .sheet(isPresented: $isShareSheetPresented) {
             if let url = leaderboardViewModel.shareURL {
                 ShareSheet(activityItems: [url])
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.visible)
             }
         }
-        .sheet(isPresented: $isShowingPrivacyExplanation) {
-            PrivacyExplanationView(isMonitoring: $isShowingPrivacyExplanation)
-        }
-        .onAppear {
-            if !screenTimeManager.isAuthorized {
-                isShowingPrivacyExplanation = true
-            }
+        .familyActivityPicker(
+            isPresented: $screenTimeManager.isPickerPresented,
+            selection: $screenTimeManager.activitySelection
+        )
+        .onChange(of: screenTimeManager.activitySelection) { selection in
+            screenTimeManager.selectionDidComplete(selection)
         }
     }
 }

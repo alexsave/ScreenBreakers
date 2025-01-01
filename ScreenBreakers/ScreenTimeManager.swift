@@ -16,13 +16,15 @@ class ScreenTimeManager: ObservableObject {
     private let eventName = DeviceActivityEvent.Name("group.com.alexs.ScreenBreakers.oneMinuteThresholdEvent")
     private let defaults = UserDefaults.standard
     private let authorizationKey = "isAuthorized"
+    private let selectionKey = "FamilyActivitySelection"
     
     init() {
+        // Check current authorization status
+        isAuthorized = AuthorizationCenter.shared.authorizationStatus == .approved
+        
         // Load any saved selection
         if let savedSelection = loadSelection() {
             activitySelection = savedSelection
-            // Check saved authorization status
-            isAuthorized = defaults.bool(forKey: authorizationKey)
             if isAuthorized {
                 startMonitoringOneMinuteThreshold()
             }
@@ -33,36 +35,52 @@ class ScreenTimeManager: ObservableObject {
         do {
             try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
             isAuthorized = AuthorizationCenter.shared.authorizationStatus == .approved
-            defaults.set(isAuthorized, forKey: authorizationKey)
-            print("Screen Time authorization granted.")
+            
+            if isAuthorized {
+                // Show picker immediately after authorization
+                isPickerPresented = true
+            }
+            
+            print("Screen Time authorization status: \(isAuthorized)")
         } catch {
             isAuthorized = false
-            defaults.set(isAuthorized, forKey: authorizationKey)
             print("Failed to request authorization: \(error)")
         }
     }
     
-    func storeSelection(_ selection: FamilyActivitySelection) {
+    func selectionDidComplete(_ selection: FamilyActivitySelection) {
+        print("Selection completed with \(selection.applicationTokens.count) apps")
+        storeSelection(selection)
+        startMonitoringOneMinuteThreshold()
+    }
+    
+    private func storeSelection(_ selection: FamilyActivitySelection) {
         do {
             let data = try PropertyListEncoder().encode(selection)
-            defaults.set(data, forKey: "FamilyActivitySelection")
-            isAuthorized = true
-            defaults.set(isAuthorized, forKey: authorizationKey)
+            defaults.set(data, forKey: selectionKey)
+            print("Stored selection successfully")
         } catch {
             print("Error encoding selection: \(error)")
         }
     }
     
-    func loadSelection() -> FamilyActivitySelection? {
-        guard let data = defaults.data(forKey: "FamilyActivitySelection") else {
+    private func loadSelection() -> FamilyActivitySelection? {
+        guard let data = defaults.data(forKey: selectionKey) else {
+            print("No saved selection found")
             return nil
         }
-        return try? PropertyListDecoder().decode(FamilyActivitySelection.self, from: data)
+        do {
+            let selection = try PropertyListDecoder().decode(FamilyActivitySelection.self, from: data)
+            print("Loaded selection with \(selection.applicationTokens.count) apps")
+            return selection
+        } catch {
+            print("Error decoding selection: \(error)")
+            return nil
+        }
     }
     
     func startMonitoringOneMinuteThreshold() {
-        // Store the current selection
-        storeSelection(activitySelection)
+        print("Starting monitoring with \(activitySelection.applicationTokens.count) apps")
         
         // Stop any existing monitoring to re-arm
         center.stopMonitoring([activityName])
@@ -93,6 +111,5 @@ class ScreenTimeManager: ObservableObject {
             print("Failed to start monitoring: \(error)")
         }
     }
-    
 }
 
