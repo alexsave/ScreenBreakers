@@ -19,8 +19,10 @@ class ScreenTimeManager: ObservableObject {
     private let selectionKey = "FamilyActivitySelection"
     
     init() {
-        // Check current authorization status
-        isAuthorized = AuthorizationCenter.shared.authorizationStatus == .approved
+        // Check current authorization status and saved status
+        let currentStatus = AuthorizationCenter.shared.authorizationStatus == .approved
+        let savedStatus = defaults.bool(forKey: authorizationKey)
+        isAuthorized = currentStatus || savedStatus
         
         // Load any saved selection
         if let savedSelection = loadSelection() {
@@ -37,6 +39,8 @@ class ScreenTimeManager: ObservableObject {
             isAuthorized = AuthorizationCenter.shared.authorizationStatus == .approved
             
             if isAuthorized {
+                // Save authorization status
+                defaults.set(true, forKey: authorizationKey)
                 // Show picker immediately after authorization
                 isPickerPresented = true
             }
@@ -44,6 +48,7 @@ class ScreenTimeManager: ObservableObject {
             print("Screen Time authorization status: \(isAuthorized)")
         } catch {
             isAuthorized = false
+            defaults.set(false, forKey: authorizationKey)
             print("Failed to request authorization: \(error)")
         }
     }

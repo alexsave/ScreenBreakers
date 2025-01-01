@@ -35,7 +35,7 @@ class LeaderboardViewModel: ObservableObject {
     
     @Published var currentLeaderboard: LeaderboardData?
     @Published var shareURL: URL?
-    @Published private(set) var isLoadingLeaderboard = true
+    @Published private(set) var isLoadingLeaderboard = false
     
     private var updateTask: Task<Void, Never>?
     private let debounceInterval: TimeInterval = 30 // Update at most every 30 seconds
@@ -48,29 +48,26 @@ class LeaderboardViewModel: ObservableObject {
         if let savedName = defaults.string(forKey: leaderboardNameKey) {
             self.leaderboardName = savedName
         }
-        
-        // Set loading to false initially if we don't have a saved ID
-        if defaults.string(forKey: leaderboardIdKey) == nil {
-            print("📱 No saved leaderboard ID, setting loading to false")
-            isLoadingLeaderboard = false
-        }
-        
-        // Create initial user if needed and load leaderboard
-        Task {
-            do {
-                print("📱 Creating or updating user")
-                _ = try await supabase.createOrUpdateUser(name: playerName)
-                
-                // If we have a saved leaderboard ID, try to load it
-                if let savedId = defaults.string(forKey: leaderboardIdKey) {
-                    print("📱 Found saved leaderboard ID: \(savedId)")
-                    try await supabase.joinLeaderboard(id: savedId)
-                    await fetchLeaderboard()
-                }
-            } catch {
-                print("Failed to create initial user or load leaderboard: \(error)")
+    }
+    
+    func initializeAfterAuthorization() async {
+        isLoadingLeaderboard = true
+        do {
+            print("📱 Creating or updating user")
+            _ = try await supabase.createOrUpdateUser(name: playerName)
+            
+            // If we have a saved leaderboard ID, try to load it
+            if let savedId = defaults.string(forKey: leaderboardIdKey) {
+                print("📱 Found saved leaderboard ID: \(savedId)")
+                try await supabase.joinLeaderboard(id: savedId)
+                await fetchLeaderboard()
+            } else {
+                print("📱 No saved leaderboard ID")
                 isLoadingLeaderboard = false
             }
+        } catch {
+            print("Failed to create initial user or load leaderboard: \(error)")
+            isLoadingLeaderboard = false
         }
     }
     
@@ -128,14 +125,20 @@ class LeaderboardViewModel: ObservableObject {
             print("📱 Successfully fetched leaderboard with \(mappedPlayers.count) players")
             
             // Save the leaderboard ID
-            defaults.set(leaderboardId, forKey: leaderboardIdKey)
+            if !leaderboardId.isEmpty {
+                defaults.set(leaderboardId, forKey: leaderboardIdKey)
+            }
             isLoadingLeaderboard = false
         } catch {
             print("Failed to fetch leaderboard: \(error)")
-            self.currentLeaderboard = nil
-            self.leaderboardName = "Leaderboard"
-            defaults.removeObject(forKey: leaderboardIdKey)
-            defaults.removeObject(forKey: leaderboardNameKey)
+            let nsError = error as NSError
+            // Only clear leaderboard data if we get a specific error indicating it doesn't exist
+            if nsError.domain == "SupabaseError" && nsError.code == 404 {
+                self.currentLeaderboard = nil
+                self.leaderboardName = "Leaderboard"
+                defaults.removeObject(forKey: leaderboardIdKey)
+                defaults.removeObject(forKey: leaderboardNameKey)
+            }
             isLoadingLeaderboard = false
         }
     }
@@ -145,11 +148,12 @@ class LeaderboardViewModel: ObservableObject {
         isLoadingLeaderboard = true
         
         // Check if we already have a leaderboard ID saved
-        if let savedId = defaults.string(forKey: leaderboardIdKey) {
+        if let savedId = defaults.string(forKey: leaderboardIdKey),
+           !savedId.isEmpty {
             print("📱 Using existing leaderboard")
             shareURL = URL(string: "screenbreakers://\(savedId)")
             print("📱 Set share URL: \(shareURL?.absoluteString ?? "nil")")
-            isLoadingLeaderboard = false
+            await fetchLeaderboard() // Make sure we have the latest data
             return
         }
         
@@ -157,14 +161,19 @@ class LeaderboardViewModel: ObservableObject {
         print("📱 Creating new leaderboard")
         do {
             let leaderboardId = try await supabase.createLeaderboard(name: "Leaderboard")
-            self.leaderboardName = "Leaderboard"
+            print("📱 Created leaderboard with ID: \(leaderboardId)")
+            
+            // Save the ID first
             defaults.set(leaderboardId, forKey: leaderboardIdKey)
             defaults.set("Leaderboard", forKey: leaderboardNameKey)
-            print("📱 Created leaderboard with ID: \(leaderboardId)")
-            await fetchLeaderboard()
+            self.leaderboardName = "Leaderboard"
             
+            // Set share URL
             shareURL = URL(string: "screenbreakers://\(leaderboardId)")
             print("📱 Set share URL: \(shareURL?.absoluteString ?? "nil")")
+            
+            // Fetch the leaderboard data
+            await fetchLeaderboard() // This will set isLoadingLeaderboard to false when done
         } catch {
             print("Failed to create leaderboard: \(error)")
             isLoadingLeaderboard = false

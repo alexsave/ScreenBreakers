@@ -34,6 +34,14 @@ struct ContentView: View {
     @StateObject private var screenTimeManager = ScreenTimeManager()
     @StateObject private var leaderboardViewModel = LeaderboardViewModel()
     @State private var isShareSheetPresented = false
+    @Query private var dailyActivities: [DailyActivity]
+    
+    private var todayMinutes: Int {
+        let today = Calendar.current.startOfDay(for: Date())
+        return dailyActivities
+            .first { Calendar.current.startOfDay(for: $0.date) == today }
+            .map { Int($0.totalScreenMinutes) } ?? 0
+    }
     
     var body: some View {
         NavigationView {
@@ -74,7 +82,7 @@ struct ContentView: View {
                             LeaderboardRow(
                                 rank: 1,
                                 playerName: leaderboardViewModel.playerName,
-                                minutes: 0,
+                                minutes: todayMinutes,
                                 isAlternate: false
                             )
                             .padding(.horizontal)
@@ -125,6 +133,26 @@ struct ContentView: View {
         )
         .onChange(of: screenTimeManager.activitySelection) { selection in
             screenTimeManager.selectionDidComplete(selection)
+        }
+        .onChange(of: todayMinutes) { minutes in
+            Task {
+                await leaderboardViewModel.updateScreenTime(minutes: minutes)
+            }
+        }
+        .onChange(of: screenTimeManager.isAuthorized) { isAuthorized in
+            if isAuthorized {
+                Task {
+                    await leaderboardViewModel.initializeAfterAuthorization()
+                    await leaderboardViewModel.updateScreenTime(minutes: todayMinutes)
+                }
+            }
+        }
+        .task {
+            // Initialize leaderboard if already authorized
+            if screenTimeManager.isAuthorized {
+                await leaderboardViewModel.initializeAfterAuthorization()
+                await leaderboardViewModel.updateScreenTime(minutes: todayMinutes)
+            }
         }
     }
 }
