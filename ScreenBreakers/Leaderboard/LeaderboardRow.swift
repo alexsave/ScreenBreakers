@@ -5,7 +5,7 @@ struct LeaderboardRow: View {
     let playerName: String
     let minutes: Int
     let isAlternate: Bool
-    var showEditButton: Bool = false
+    var isCurrentUser: Bool = false
     var onEdit: (() -> Void)? = nil
     
     var body: some View {
@@ -18,8 +18,8 @@ struct LeaderboardRow: View {
             HStack(spacing: 4) {
                 Text(playerName)
                     .font(.headline)
-                
-                if showEditButton {
+                    
+                if isCurrentUser {
                     Button(action: {
                         onEdit?()
                     }) {

@@ -34,6 +34,8 @@ struct ContentView: View {
     @StateObject private var screenTimeManager = ScreenTimeManager()
     @StateObject private var leaderboardViewModel = LeaderboardViewModel()
     @State private var isShareSheetPresented = false
+    @State private var isEditingPlayerName = false
+    @State private var isEditingLeaderboardName = false
     @Query private var dailyActivities: [DailyActivity]
     
     private var todayMinutes: Int {
@@ -49,10 +51,19 @@ struct ContentView: View {
                 // Header
                 HStack {
                     if !leaderboardViewModel.isLoadingLeaderboard {
-                        Text(leaderboardViewModel.leaderboardName)
-                            .font(.title)
-                            .fontWeight(.bold)
-                            .padding(.leading)
+                        HStack {
+                            Text(leaderboardViewModel.leaderboardName)
+                                .font(.title)
+                                .fontWeight(.bold)
+                            
+                            if leaderboardViewModel.currentLeaderboard != nil {
+                                Button(action: { isEditingLeaderboardName = true }) {
+                                    Image(systemName: "pencil")
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                        }
+                        .padding(.leading)
                         
                         Spacer()
                         
@@ -83,7 +94,9 @@ struct ContentView: View {
                                 rank: 1,
                                 playerName: leaderboardViewModel.playerName,
                                 minutes: todayMinutes,
-                                isAlternate: false
+                                isAlternate: false,
+                                isCurrentUser: true,
+                                onEdit: { isEditingPlayerName = true }
                             )
                             .padding(.horizontal)
                             
@@ -95,7 +108,8 @@ struct ContentView: View {
                                             rank: index + 1,
                                             playerName: player.name,
                                             minutes: player.minutes,
-                                            isAlternate: index % 2 == 1
+                                            isAlternate: index % 2 == 1,
+                                            isCurrentUser: false
                                         )
                                         .padding(.horizontal)
                                     }
@@ -127,17 +141,26 @@ struct ContentView: View {
                     .presentationDragIndicator(.visible)
             }
         }
+        .sheet(isPresented: $isEditingPlayerName) {
+            NameEditSheet(
+                isPresented: $isEditingPlayerName,
+                name: $leaderboardViewModel.playerName,
+                title: "Edit Your Name"
+            )
+        }
+        .sheet(isPresented: $isEditingLeaderboardName) {
+            NameEditSheet(
+                isPresented: $isEditingLeaderboardName,
+                name: $leaderboardViewModel.leaderboardName,
+                title: "Edit Leaderboard Name"
+            )
+        }
         .familyActivityPicker(
             isPresented: $screenTimeManager.isPickerPresented,
             selection: $screenTimeManager.activitySelection
         )
         .onChange(of: screenTimeManager.activitySelection) { selection in
             screenTimeManager.selectionDidComplete(selection)
-        }
-        .onChange(of: todayMinutes) { minutes in
-            Task {
-                await leaderboardViewModel.updateScreenTime(minutes: minutes)
-            }
         }
         .onChange(of: screenTimeManager.isAuthorized) { isAuthorized in
             if isAuthorized {
