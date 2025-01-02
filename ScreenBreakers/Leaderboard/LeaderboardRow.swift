@@ -18,6 +18,7 @@ struct LeaderboardRow: View {
             HStack(spacing: 4) {
                 Text(playerName)
                     .font(.headline)
+                    .lineLimit(1)
                     
                 if isCurrentUser {
                     Button(action: {
@@ -35,8 +36,9 @@ struct LeaderboardRow: View {
                 .font(.headline)
                 .foregroundColor(.blue)
         }
-        .padding(.vertical, 8)
         .padding(.horizontal, 16)
+        .frame(maxWidth: .infinity)
+        .frame(height: 44)
         .background(isAlternate ? Color(.secondarySystemBackground) : Color(.systemBackground))
     }
 } 

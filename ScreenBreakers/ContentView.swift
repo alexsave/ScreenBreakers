@@ -83,7 +83,7 @@ struct ContentView: View {
                 .padding(.vertical)
                 
                 ScrollView {
-                    VStack(spacing: 16) {
+                    VStack(spacing: 0) {
                         if !screenTimeManager.isAuthorized {
                             PrivacyExplanationView(manager: screenTimeManager)
                         } else if leaderboardViewModel.isLoadingLeaderboard {
@@ -101,7 +101,6 @@ struct ContentView: View {
                                         isCurrentUser: player.name == leaderboardViewModel.playerName,
                                         onEdit: player.name == leaderboardViewModel.playerName ? { isEditingPlayerName = true } : nil
                                     )
-                                    .padding(.horizontal)
                                 }
                             } else {
                                 // Show current user's stats if no leaderboard
@@ -113,7 +112,6 @@ struct ContentView: View {
                                     isCurrentUser: true,
                                     onEdit: { isEditingPlayerName = true }
                                 )
-                                .padding(.horizontal)
                                 
                                 // Show share prompt
                                 VStack(spacing: 16) {
