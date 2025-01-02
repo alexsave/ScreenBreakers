@@ -209,11 +209,13 @@ struct LeaderboardMember: Codable {
     let userId: UUID
     let userName: String
     let todayMinutes: Int
+    let leaderboardName: String
     
     enum CodingKeys: String, CodingKey {
         case userId = "user_id"
         case userName = "user_name"
         case todayMinutes = "today_minutes"
+        case leaderboardName = "leaderboard_name"
     }
 }
 

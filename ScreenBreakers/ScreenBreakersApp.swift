@@ -22,6 +22,10 @@ struct ScreenBreakersApp: App {
             ContentView()
                 .environmentObject(deepLinkManager)
                 .modelContainer(container)
+                .onOpenURL { url in
+                    print("📱 Received deep link URL: \(url)")
+                    deepLinkManager.handleDeepLink(url)
+                }
         }
     }
 }

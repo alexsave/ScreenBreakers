@@ -95,6 +95,11 @@ class LeaderboardViewModel: ObservableObject {
             let members = try await supabase.getLeaderboardData()
             let leaderboardId = supabase.currentLeaderboardId ?? ""
             
+            // Get the leaderboard name from the first member (they all have the same name)
+            if let firstMember = members.first {
+                self.leaderboardName = firstMember.leaderboardName
+            }
+            
             // Create initial player entry if not in leaderboard
             var mappedPlayers = members.map { member in
                 (
@@ -119,14 +124,15 @@ class LeaderboardViewModel: ObservableObject {
             
             self.currentLeaderboard = LeaderboardData(
                 id: leaderboardId,
-                name: leaderboardName,
+                name: self.leaderboardName,
                 players: mappedPlayers
             )
             print("📱 Successfully fetched leaderboard with \(mappedPlayers.count) players")
             
-            // Save the leaderboard ID
+            // Save the leaderboard ID and name
             if !leaderboardId.isEmpty {
                 defaults.set(leaderboardId, forKey: leaderboardIdKey)
+                defaults.set(self.leaderboardName, forKey: leaderboardNameKey)
             }
             isLoadingLeaderboard = false
         } catch {

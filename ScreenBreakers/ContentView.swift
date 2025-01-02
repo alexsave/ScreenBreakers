@@ -37,6 +37,7 @@ struct ContentView: View {
     @State private var isEditingPlayerName = false
     @State private var isEditingLeaderboardName = false
     @Query private var dailyActivities: [DailyActivity]
+    @EnvironmentObject private var deepLinkManager: DeepLinkManager
     
     private var todayMinutes: Int {
         let today = Calendar.current.startOfDay(for: Date())
@@ -177,11 +178,34 @@ struct ContentView: View {
                 }
             }
         }
+        .onChange(of: deepLinkManager.pendingLeaderboardId) { leaderboardId in
+            if let id = leaderboardId {
+                print("📱 Received deep link for leaderboard: \(id)")
+                Task {
+                    if screenTimeManager.isAuthorized {
+                        _ = await leaderboardViewModel.joinLeaderboard(withId: id)
+                    } else {
+                        // Store the ID to join after authorization
+                        UserDefaults.standard.set(id, forKey: "pending_leaderboard_id")
+                    }
+                    // Clear the pending ID after handling
+                    deepLinkManager.pendingLeaderboardId = nil
+                }
+            }
+        }
         .task {
             // Initialize leaderboard if already authorized
             if screenTimeManager.isAuthorized {
                 print("📱 Starting initial setup - already authorized")
                 await leaderboardViewModel.initializeAfterAuthorization()
+                
+                // Check for pending leaderboard ID from deep link
+                if let pendingId = UserDefaults.standard.string(forKey: "pending_leaderboard_id") {
+                    print("📱 Found pending leaderboard ID: \(pendingId)")
+                    _ = await leaderboardViewModel.joinLeaderboard(withId: pendingId)
+                    UserDefaults.standard.removeObject(forKey: "pending_leaderboard_id")
+                }
+                
                 print("📱 Initial today's minutes: \(todayMinutes)")
                 if todayMinutes > 0 {
                     print("📱 Updating initial screen time")
