@@ -163,17 +163,34 @@ struct ContentView: View {
         }
         .onChange(of: screenTimeManager.isAuthorized) { isAuthorized in
             if isAuthorized {
+                print("📱 Authorization changed to authorized=true")
                 Task {
+                    print("📱 Starting post-authorization initialization")
                     await leaderboardViewModel.initializeAfterAuthorization()
-                    await leaderboardViewModel.updateScreenTime(minutes: todayMinutes)
+                    print("📱 Today's minutes: \(todayMinutes)")
+                    if todayMinutes > 0 {
+                        print("📱 Updating screen time after authorization")
+                        await leaderboardViewModel.updateScreenTime(minutes: todayMinutes)
+                    } else {
+                        print("📱 Skipping screen time update - no minutes recorded")
+                    }
                 }
             }
         }
         .task {
             // Initialize leaderboard if already authorized
             if screenTimeManager.isAuthorized {
+                print("📱 Starting initial setup - already authorized")
                 await leaderboardViewModel.initializeAfterAuthorization()
-                await leaderboardViewModel.updateScreenTime(minutes: todayMinutes)
+                print("📱 Initial today's minutes: \(todayMinutes)")
+                if todayMinutes > 0 {
+                    print("📱 Updating initial screen time")
+                    await leaderboardViewModel.updateScreenTime(minutes: todayMinutes)
+                } else {
+                    print("📱 Skipping initial screen time update - no minutes recorded")
+                }
+            } else {
+                print("📱 Initial setup - not yet authorized")
             }
         }
     }

@@ -40,6 +40,7 @@ class LeaderboardViewModel: ObservableObject {
     
     private var updateTask: Task<Void, Never>?
     private let debounceInterval: TimeInterval = 30 // Update at most every 30 seconds
+    private var isFirstUpdate = true
     
     init() {
         print("📱 Initializing LeaderboardViewModel")
@@ -62,10 +63,8 @@ class LeaderboardViewModel: ObservableObject {
                 print("📱 Found saved leaderboard ID: \(savedId)")
                 try await supabase.joinLeaderboard(id: savedId)
                 await fetchLeaderboard()
-            } else {
-                print("📱 No saved leaderboard ID")
-                isLoadingLeaderboard = false
             }
+            isLoadingLeaderboard = false
         } catch {
             print("Failed to create initial user or load leaderboard: \(error)")
             isLoadingLeaderboard = false
@@ -200,34 +199,60 @@ class LeaderboardViewModel: ObservableObject {
     }
     
     func updateScreenTime(minutes: Int) async {
+        print("📱 Starting updateScreenTime with \(minutes) minutes")
+        print("📱 Current user ID: \(supabase.currentUserId?.uuidString ?? "nil")")
+        print("📱 Current leaderboard ID: \(supabase.currentLeaderboardId ?? "nil")")
+        
         // Cancel any pending update
+        if updateTask != nil {
+            print("📱 Cancelling previous update task")
+        }
         updateTask?.cancel()
+        
+        let shouldDebounce = !isFirstUpdate
+        isFirstUpdate = false
         
         // Create new debounced update task
         updateTask = Task {
             do {
-                try await Task.sleep(nanoseconds: UInt64(debounceInterval * 1_000_000_000))
+                if shouldDebounce {
+                    print("📱 Waiting \(debounceInterval) seconds before update")
+                    try await Task.sleep(nanoseconds: UInt64(debounceInterval * 1_000_000_000))
+                } else {
+                    print("📱 First update of session - no delay")
+                }
                 
                 // Check if task was cancelled during sleep
-                if Task.isCancelled { return }
+                if Task.isCancelled {
+                    print("📱 Update task was cancelled")
+                    return
+                }
                 
                 // Ensure we have a valid user ID
                 if supabase.currentUserId == nil {
+                    print("📱 No current user ID, attempting to create/update user")
                     do {
                         _ = try await supabase.createOrUpdateUser(name: playerName)
+                        print("📱 Successfully created/updated user")
                     } catch {
-                        print("Failed to create/update user before updating screen time: \(error)")
+                        print("📱 Failed to create/update user before updating screen time: \(error)")
                         return
                     }
                 }
                 
+                print("📱 Sending screen time update to server: \(minutes) minutes")
                 try await supabase.updateDailyUsage(minutes: minutes)
+                print("📱 Successfully updated daily usage")
+                
                 if supabase.currentLeaderboardId != nil {
+                    print("📱 Refreshing leaderboard after update")
                     await fetchLeaderboard()
+                } else {
+                    print("📱 No current leaderboard to refresh")
                 }
             } catch {
                 if !Task.isCancelled {
-                    print("Failed to update screen time: \(error)")
+                    print("📱 Failed to update screen time: \(error)")
                 }
             }
         }
