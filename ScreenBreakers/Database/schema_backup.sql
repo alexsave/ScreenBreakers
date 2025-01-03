@@ -118,6 +118,6 @@ BEGIN
         AND du.day = EXTRACT(DAY FROM NOW() AT TIME ZONE p_timezone)
     LEFT JOIN leaderboards l ON l.id = p_leaderboard_id
     WHERE u.current_leaderboard_id = p_leaderboard_id
-    ORDER BY today_minutes DESC;
+    ORDER BY today_minutes ASC;
 END;
 $$ LANGUAGE plpgsql; 

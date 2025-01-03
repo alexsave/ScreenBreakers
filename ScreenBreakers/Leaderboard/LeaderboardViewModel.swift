@@ -125,7 +125,7 @@ class LeaderboardViewModel: ObservableObject {
             }
             
             // Sort players by minutes
-            mappedPlayers.sort { $0.minutes > $1.minutes }
+            mappedPlayers.sort { $0.minutes < $1.minutes }
             print("📱 Final sorted players: \(mappedPlayers)")
             
             self.currentLeaderboard = LeaderboardData(
