@@ -93,11 +93,14 @@ class LeaderboardViewModel: ObservableObject {
         print("📱 Fetching leaderboard data")
         do {
             let members = try await supabase.getLeaderboardData()
+            print("📱 Raw leaderboard data: \(members)")
+            
             let leaderboardId = supabase.currentLeaderboardId ?? ""
             
             // Get the leaderboard name from the first member (they all have the same name)
             if let firstMember = members.first {
                 self.leaderboardName = firstMember.leaderboardName
+                print("📱 Setting leaderboard name to: \(firstMember.leaderboardName)")
             }
             
             // Create initial player entry if not in leaderboard
@@ -108,10 +111,12 @@ class LeaderboardViewModel: ObservableObject {
                     minutes: member.todayMinutes
                 )
             }
+            print("📱 Mapped players before adding current user: \(mappedPlayers)")
             
             // Add current user if not in the list
             if let currentUserId = supabase.currentUserId?.uuidString,
                !mappedPlayers.contains(where: { $0.id == currentUserId }) {
+                print("📱 Adding current user to list: \(currentUserId) (\(playerName))")
                 mappedPlayers.append((
                     id: currentUserId,
                     name: playerName,
@@ -121,6 +126,7 @@ class LeaderboardViewModel: ObservableObject {
             
             // Sort players by minutes
             mappedPlayers.sort { $0.minutes > $1.minutes }
+            print("📱 Final sorted players: \(mappedPlayers)")
             
             self.currentLeaderboard = LeaderboardData(
                 id: leaderboardId,

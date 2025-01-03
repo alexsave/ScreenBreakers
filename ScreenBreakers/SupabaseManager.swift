@@ -168,10 +168,17 @@ class SupabaseManager: ObservableObject {
             ])
         }
         
+        // Get the current timezone identifier
+        let timezone = TimeZone.current.identifier
+        print("📱 Using timezone for leaderboard data: \(timezone)")
+        
         return try await client
             .rpc(
                 "get_leaderboard_data",
-                params: GetLeaderboardDataParams(p_leaderboard_id: leaderboardId)
+                params: GetLeaderboardDataParams(
+                    p_leaderboard_id: leaderboardId,
+                    p_timezone: timezone
+                )
             )
             .execute()
             .value
@@ -227,4 +234,5 @@ struct UpdateDailyUsageParams: Codable {
 
 struct GetLeaderboardDataParams: Codable {
     let p_leaderboard_id: String
+    let p_timezone: String
 } 
