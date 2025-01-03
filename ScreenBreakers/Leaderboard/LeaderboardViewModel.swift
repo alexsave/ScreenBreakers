@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 // Helper struct to maintain compatibility with existing views
 public struct LeaderboardData {
@@ -14,6 +15,8 @@ class LeaderboardViewModel: ObservableObject {
     private let leaderboardNameKey = "leaderboard_name"
     private let leaderboardIdKey = "leaderboard_id"
     let supabase = SupabaseManager.shared
+    
+    @Query private var dailyActivities: [DailyActivity]
     
     @Published var leaderboardName: String = "Leaderboard" {
         didSet {
@@ -52,11 +55,59 @@ class LeaderboardViewModel: ObservableObject {
         }
     }
     
+    private func syncPreviousDaysData() async {
+        print("📱 Checking for previous days' unsynced data")
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        
+        // Find all activities from previous days
+        let previousDaysData = dailyActivities.filter { 
+            calendar.startOfDay(for: $0.date) < today 
+        }
+        
+        if !previousDaysData.isEmpty {
+            print("📱 Found \(previousDaysData.count) days of unsynced data")
+            
+            do {
+                // Ensure we have a valid user ID
+                if supabase.currentUserId == nil {
+                    print("📱 No current user ID, attempting to create/update user")
+                    _ = try await supabase.createOrUpdateUser(name: playerName)
+                }
+                
+                // Get the ModelContext to delete the old records
+                let context = try ModelConfigurationManager.getContext()
+                
+                // Update each day's usage
+                for dayData in previousDaysData {
+                    let dayNumber = calendar.component(.day, from: dayData.date)
+                    print("📱 Syncing data for day \(dayNumber): \(dayData.totalScreenMinutes) minutes")
+                    
+                    try await supabase.updateDailyUsage(minutes: Int(dayData.totalScreenMinutes))
+                    
+                    // Delete the record after successful sync
+                    context.delete(dayData)
+                }
+                
+                // Save the context to persist deletions
+                try context.save()
+                print("📱 Successfully synced and cleaned up \(previousDaysData.count) days of data")
+            } catch {
+                print("📱 Failed to sync previous days' data: \(error)")
+            }
+        } else {
+            print("📱 No unsynced data found from previous days")
+        }
+    }
+    
     func initializeAfterAuthorization() async {
         isLoadingLeaderboard = true
         do {
             print("📱 Creating or updating user")
             _ = try await supabase.createOrUpdateUser(name: playerName)
+            
+            // Sync any unsynced data from previous days
+            await syncPreviousDaysData()
             
             // If we have a saved leaderboard ID, try to load it
             if let savedId = defaults.string(forKey: leaderboardIdKey) {
