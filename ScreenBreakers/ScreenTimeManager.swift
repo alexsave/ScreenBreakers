@@ -2,6 +2,7 @@ import SwiftUI
 import FamilyControls
 import DeviceActivity
 
+ replicate last nights problem by creating a user whose last daily_usage is from yesterday, and hasn't opened the app today
 @MainActor
 class ScreenTimeManager: ObservableObject {
     @Published var isPickerPresented = false
